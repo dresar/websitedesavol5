@@ -1,0 +1,540 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manajemen Audit Log Lengkap - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Manajemen Audit Log Lengkap</h2>
+        <p class="text-muted">Kelola log aktivitas dan audit trail sistem secara detail</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" onclick="exportAuditLog()">
+            <i class="bi bi-download"></i> Export Log
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">2,450</div>
+                    <div class="stats-label">Total Log</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-list-ul"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">1,890</div>
+                    <div class="stats-label">Login Berhasil</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">45</div>
+                    <div class="stats-label">Login Gagal</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+            <div>
+                <div class="stats-number">12</div>
+                <div class="stats-label">Aktivitas Mencurigakan</div>
+            </div>
+            <div class="stats-icon">
+                <i class="bi bi-shield-exclamation"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter and Search -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Cari log..." id="searchLog">
+        </div>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterAction">
+            <option value="">Semua Aksi</option>
+            <option value="login">Login</option>
+            <option value="logout">Logout</option>
+            <option value="create">Create</option>
+            <option value="update">Update</option>
+            <option value="delete">Delete</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterUser">
+            <option value="">Semua User</option>
+            <option value="admin">Admin</option>
+            <option value="staff">Staff</option>
+            <option value="user">User</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterDate">
+            <option value="">Semua Tanggal</option>
+            <option value="today">Hari Ini</option>
+            <option value="week">Minggu Ini</option>
+            <option value="month">Bulan Ini</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="exportAuditLog()">
+                <i class="bi bi-download"></i> Export
+            </button>
+            <button class="btn btn-outline-secondary" onclick="resetFilters()">
+                <i class="bi bi-arrow-clockwise"></i> Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Audit Log Table -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Waktu</th>
+                        <th>User</th>
+                        <th>Aksi</th>
+                        <th>Modul</th>
+                        <th>Detail</th>
+                        <th>IP Address</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="auditLogTable">
+                    <!-- Log Entry 1 -->
+                    <tr data-aos="fade-up">
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">12 Sep 2024</span>
+                                <small class="text-muted">14:30:25</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-2">
+                                    <div class="avatar-title bg-primary text-white rounded-circle">
+                                        A
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Admin</div>
+                                    <small class="text-muted">admin@desa.com</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">LOGIN</span>
+                        </td>
+                        <td>
+                            <span class="text-primary">Authentication</span>
+                        </td>
+                        <td>
+                            <span class="text-muted">Login berhasil dari browser Chrome</span>
+                        </td>
+                        <td>
+                            <code>192.168.1.100</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">Success</span>
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" onclick="viewLogDetail(1)"><i class="bi bi-eye"></i> Lihat Detail</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="exportLog(1)"><i class="bi bi-download"></i> Export</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Log Entry 2 -->
+                    <tr data-aos="fade-up" data-aos-delay="100">
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">12 Sep 2024</span>
+                                <small class="text-muted">14:25:10</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-2">
+                                    <div class="avatar-title bg-warning text-white rounded-circle">
+                                        S
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Staff</div>
+                                    <small class="text-muted">staff@desa.com</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary">CREATE</span>
+                        </td>
+                        <td>
+                            <span class="text-primary">Penduduk</span>
+                        </td>
+                        <td>
+                            <span class="text-muted">Menambah data penduduk baru: John Doe</span>
+                        </td>
+                        <td>
+                            <code>192.168.1.101</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">Success</span>
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" onclick="viewLogDetail(2)"><i class="bi bi-eye"></i> Lihat Detail</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="exportLog(2)"><i class="bi bi-download"></i> Export</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Log Entry 3 -->
+                    <tr data-aos="fade-up" data-aos-delay="200">
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">12 Sep 2024</span>
+                                <small class="text-muted">14:20:45</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-2">
+                                    <div class="avatar-title bg-danger text-white rounded-circle">
+                                        U
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">User</div>
+                                    <small class="text-muted">user@desa.com</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning">UPDATE</span>
+                        </td>
+                        <td>
+                            <span class="text-primary">Profil</span>
+                        </td>
+                        <td>
+                            <span class="text-muted">Mengupdate profil pribadi</span>
+                        </td>
+                        <td>
+                            <code>192.168.1.102</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">Success</span>
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" onclick="viewLogDetail(3)"><i class="bi bi-eye"></i> Lihat Detail</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="exportLog(3)"><i class="bi bi-download"></i> Export</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Log Entry 4 -->
+                    <tr data-aos="fade-up" data-aos-delay="300">
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">12 Sep 2024</span>
+                                <small class="text-muted">14:15:30</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-2">
+                                    <div class="avatar-title bg-secondary text-white rounded-circle">
+                                        ?
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Unknown</div>
+                                    <small class="text-muted">192.168.1.200</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-danger">LOGIN</span>
+                        </td>
+                        <td>
+                            <span class="text-primary">Authentication</span>
+                        </td>
+                        <td>
+                            <span class="text-muted">Percobaan login dengan kredensial tidak valid</span>
+                        </td>
+                        <td>
+                            <code>192.168.1.200</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-danger">Failed</span>
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" onclick="viewLogDetail(4)"><i class="bi bi-eye"></i> Lihat Detail</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="exportLog(4)"><i class="bi bi-download"></i> Export</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="#" onclick="blockIP('192.168.1.200')"><i class="bi bi-shield-x"></i> Blokir IP</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Log Entry 5 -->
+                    <tr data-aos="fade-up" data-aos-delay="400">
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">12 Sep 2024</span>
+                                <small class="text-muted">14:10:15</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-2">
+                                    <div class="avatar-title bg-info text-white rounded-circle">
+                                        A
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Admin</div>
+                                    <small class="text-muted">admin@desa.com</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-danger">DELETE</span>
+                        </td>
+                        <td>
+                            <span class="text-primary">Surat</span>
+                        </td>
+                        <td>
+                            <span class="text-muted">Menghapus surat dengan ID: SUR-2024-001</span>
+                        </td>
+                        <td>
+                            <code>192.168.1.100</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">Success</span>
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" onclick="viewLogDetail(5)"><i class="bi bi-eye"></i> Lihat Detail</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="exportLog(5)"><i class="bi bi-download"></i> Export</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+<nav aria-label="Audit log pagination">
+    <ul class="pagination justify-content-center">
+        <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1">Previous</a>
+        </li>
+        <li class="page-item active">
+            <a class="page-link" href="#">1</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="#">2</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="#">3</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+        </li>
+    </ul>
+</nav>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.avatar-title {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+code {
+    font-size: 0.875em;
+    color: #6c757d;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Search and filter functionality
+document.getElementById('searchLog').addEventListener('input', filterLog);
+document.getElementById('filterAction').addEventListener('change', filterLog);
+document.getElementById('filterUser').addEventListener('change', filterLog);
+document.getElementById('filterDate').addEventListener('change', filterLog);
+
+function filterLog() {
+    const searchTerm = document.getElementById('searchLog').value.toLowerCase();
+    const actionFilter = document.getElementById('filterAction').value;
+    const userFilter = document.getElementById('filterUser').value;
+    const dateFilter = document.getElementById('filterDate').value;
+    
+    const rows = document.querySelectorAll('#auditLogTable tr');
+    
+    rows.forEach(row => {
+        const user = row.querySelector('td:nth-child(2) .fw-bold').textContent.toLowerCase();
+        const action = row.querySelector('td:nth-child(3) .badge').textContent.toLowerCase();
+        const module = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+        const detail = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+        
+        const matchesSearch = user.includes(searchTerm) || action.includes(searchTerm) || 
+                            module.includes(searchTerm) || detail.includes(searchTerm);
+        const matchesAction = !actionFilter || action.includes(actionFilter);
+        const matchesUser = !userFilter || user.includes(userFilter);
+        const matchesDate = !dateFilter || true; // Simplified for demo
+        
+        if (matchesSearch && matchesAction && matchesUser && matchesDate) {
+            row.style.display = 'table-row';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function resetFilters() {
+    document.getElementById('searchLog').value = '';
+    document.getElementById('filterAction').value = '';
+    document.getElementById('filterUser').value = '';
+    document.getElementById('filterDate').value = '';
+    filterLog();
+}
+
+// CRUD operations
+function viewLogDetail(id) {
+    showNotification('Membuka detail log...', 'info');
+    
+    // Simulate opening log detail
+    setTimeout(() => {
+        showNotification('Detail log berhasil dibuka', 'success');
+    }, 1000);
+}
+
+function exportLog(id) {
+    showNotification('Mengekspor log...', 'info');
+    
+    // Simulate export
+    setTimeout(() => {
+        showNotification('Log berhasil diekspor', 'success');
+    }, 2000);
+}
+
+function blockIP(ip) {
+    if (confirm(`Apakah Anda yakin ingin memblokir IP ${ip}?`)) {
+        showNotification(`Memblokir IP ${ip}...`, 'info');
+        
+        // Simulate blocking
+        setTimeout(() => {
+            showNotification(`IP ${ip} berhasil diblokir`, 'success');
+        }, 2000);
+    }
+}
+
+function exportAuditLog() {
+    showNotification('Mengekspor seluruh audit log...', 'info');
+    
+    // Simulate export
+    setTimeout(() => {
+        showNotification('Audit log berhasil diekspor', 'success');
+    }, 3000);
+}
+</script>
+{% endblock %}

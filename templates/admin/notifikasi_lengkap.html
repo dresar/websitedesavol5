@@ -1,0 +1,718 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manajemen Notifikasi Lengkap - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Manajemen Notifikasi Lengkap</h2>
+        <p class="text-muted">Kelola notifikasi dan pengumuman desa secara detail</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addNotifModal">
+            <i class="bi bi-plus-circle"></i> Buat Notifikasi
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">45</div>
+                    <div class="stats-label">Total Notifikasi</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-bell"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">38</div>
+                    <div class="stats-label">Terkirim</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">5</div>
+                    <div class="stats-label">Draft</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-file-text"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">2</div>
+                    <div class="stats-label">Gagal Kirim</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-x-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter and Search -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Cari notifikasi..." id="searchNotif">
+        </div>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterStatus">
+            <option value="">Semua Status</option>
+            <option value="terkirim">Terkirim</option>
+            <option value="draft">Draft</option>
+            <option value="gagal">Gagal Kirim</option>
+            <option value="terjadwal">Terjadwal</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterType">
+            <option value="">Semua Jenis</option>
+            <option value="pengumuman">Pengumuman</option>
+            <option value="reminder">Reminder</option>
+            <option value="alert">Alert</option>
+            <option value="info">Info</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterPriority">
+            <option value="">Semua Prioritas</option>
+            <option value="tinggi">Tinggi</option>
+            <option value="sedang">Sedang</option>
+            <option value="rendah">Rendah</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="exportNotif()">
+                <i class="bi bi-download"></i> Export
+            </button>
+            <button class="btn btn-outline-secondary" onclick="resetFilters()">
+                <i class="bi bi-arrow-clockwise"></i> Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Notifications List -->
+<div class="row" id="notifList">
+    <!-- Notification Card 1 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up">
+        <div class="card notif-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Pengumuman Gotong Royong</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-success">Terkirim</span>
+                            <span class="badge bg-primary">Pengumuman</span>
+                            <span class="badge bg-warning">Tinggi</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewNotif(1)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editNotif(1)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateNotif(1)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteNotif(1)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Akan diadakan gotong royong membersihkan saluran air pada hari Minggu, 15 September 2024 pukul 07.00 WIB
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-people text-primary"></i>
+                            <span>150 Penerima</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-calendar text-warning"></i>
+                            <span>Dikirim: 10 Sep 2024</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <span>145 Dibaca</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-clock text-info"></i>
+                            <span>07:00 WIB</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Terakhir update: 10 Sep 2024</small>
+                    </div>
+                    <div class="notif-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewNotif(1)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editNotif(1)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="resendNotif(1)">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Card 2 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="card notif-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Reminder Pembayaran PBB</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-warning">Draft</span>
+                            <span class="badge bg-info">Reminder</span>
+                            <span class="badge bg-primary">Sedang</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewNotif(2)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editNotif(2)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateNotif(2)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteNotif(2)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Reminder untuk pembayaran PBB tahun 2024 yang jatuh tempo pada 30 September 2024
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-people text-primary"></i>
+                            <span>200 Penerima</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-calendar text-warning"></i>
+                            <span>Dibuat: 8 Sep 2024</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span>Belum Dikirim</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-calendar-event text-info"></i>
+                            <span>Terjadwal: 25 Sep</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Terakhir update: 8 Sep 2024</small>
+                    </div>
+                    <div class="notif-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewNotif(2)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editNotif(2)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="sendNotif(2)">
+                            <i class="bi bi-send"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Card 3 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="card notif-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Alert Cuaca Ekstrem</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-success">Terkirim</span>
+                            <span class="badge bg-danger">Alert</span>
+                            <span class="badge bg-danger">Tinggi</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewNotif(3)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editNotif(3)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateNotif(3)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteNotif(3)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Peringatan cuaca ekstrem dengan potensi hujan lebat dan angin kencang pada 12-14 September 2024
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-people text-primary"></i>
+                            <span>500 Penerima</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-calendar text-warning"></i>
+                            <span>Dikirim: 11 Sep 2024</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <span>485 Dibaca</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-clock text-info"></i>
+                            <span>14:30 WIB</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Terakhir update: 11 Sep 2024</small>
+                    </div>
+                    <div class="notif-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewNotif(3)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editNotif(3)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="resendNotif(3)">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Card 4 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="card notif-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Info Kegiatan Desa</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-danger">Gagal Kirim</span>
+                            <span class="badge bg-info">Info</span>
+                            <span class="badge bg-success">Rendah</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewNotif(4)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editNotif(4)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateNotif(4)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteNotif(4)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Informasi tentang kegiatan desa yang akan diadakan pada bulan Oktober 2024
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-people text-primary"></i>
+                            <span>300 Penerima</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-calendar text-warning"></i>
+                            <span>Dibuat: 9 Sep 2024</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-x-circle text-danger"></i>
+                            <span>Gagal Kirim</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="notif-info">
+                            <i class="bi bi-exclamation-triangle text-warning"></i>
+                            <span>Error: Server</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Terakhir update: 9 Sep 2024</small>
+                    </div>
+                    <div class="notif-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewNotif(4)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editNotif(4)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="retryNotif(4)">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Notification Modal -->
+<div class="modal fade" id="addNotifModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buat Notifikasi Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addNotifForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Judul Notifikasi</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Jenis</option>
+                                <option value="pengumuman">Pengumuman</option>
+                                <option value="reminder">Reminder</option>
+                                <option value="alert">Alert</option>
+                                <option value="info">Info</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Isi Notifikasi</label>
+                        <textarea class="form-control" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Prioritas</label>
+                            <select class="form-select" required>
+                                <option value="rendah">Rendah</option>
+                                <option value="sedang">Sedang</option>
+                                <option value="tinggi">Tinggi</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Target Penerima</label>
+                            <input type="number" class="form-control" min="1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal Kirim</label>
+                            <input type="datetime-local" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" required>
+                                <option value="draft">Draft</option>
+                                <option value="terjadwal">Terjadwal</option>
+                                <option value="terkirim">Terkirim</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Lampiran</label>
+                        <input type="file" class="form-control" multiple>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary btn-submit">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.notif-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.notif-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.notif-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.notif-info i {
+    margin-right: 8px;
+    width: 16px;
+}
+
+.notif-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Search and filter functionality
+document.getElementById('searchNotif').addEventListener('input', filterNotif);
+document.getElementById('filterStatus').addEventListener('change', filterNotif);
+document.getElementById('filterType').addEventListener('change', filterNotif);
+document.getElementById('filterPriority').addEventListener('change', filterNotif);
+
+function filterNotif() {
+    const searchTerm = document.getElementById('searchNotif').value.toLowerCase();
+    const statusFilter = document.getElementById('filterStatus').value;
+    const typeFilter = document.getElementById('filterType').value;
+    const priorityFilter = document.getElementById('filterPriority').value;
+    
+    const cards = document.querySelectorAll('.notif-card');
+    
+    cards.forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const description = card.querySelector('.card-text').textContent.toLowerCase();
+        const status = card.querySelector('.badge.bg-success, .badge.bg-warning, .badge.bg-danger').textContent.toLowerCase();
+        const type = card.querySelector('.badge.bg-primary, .badge.bg-info, .badge.bg-warning, .badge.bg-danger').textContent.toLowerCase();
+        const priority = card.querySelector('.badge.bg-warning, .badge.bg-primary, .badge.bg-danger, .badge.bg-success').textContent.toLowerCase();
+        
+        const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+        const matchesStatus = !statusFilter || status.includes(statusFilter);
+        const matchesType = !typeFilter || type.includes(typeFilter);
+        const matchesPriority = !priorityFilter || priority.includes(priorityFilter);
+        
+        if (matchesSearch && matchesStatus && matchesType && matchesPriority) {
+            card.closest('.col-xl-6').style.display = 'block';
+        } else {
+            card.closest('.col-xl-6').style.display = 'none';
+        }
+    });
+}
+
+function resetFilters() {
+    document.getElementById('searchNotif').value = '';
+    document.getElementById('filterStatus').value = '';
+    document.getElementById('filterType').value = '';
+    document.getElementById('filterPriority').value = '';
+    filterNotif();
+}
+
+// CRUD operations
+function viewNotif(id) {
+    showNotification('Membuka detail notifikasi...', 'info');
+    
+    // Simulate opening notif detail
+    setTimeout(() => {
+        showNotification('Detail notifikasi berhasil dibuka', 'success');
+    }, 1000);
+}
+
+function editNotif(id) {
+    showNotification('Membuka editor notifikasi...', 'info');
+    
+    // Simulate opening editor
+    setTimeout(() => {
+        showNotification('Editor notifikasi berhasil dibuka', 'success');
+    }, 1000);
+}
+
+function duplicateNotif(id) {
+    showNotification('Menduplikasi notifikasi...', 'info');
+    
+    // Simulate duplication
+    setTimeout(() => {
+        showNotification('Notifikasi berhasil diduplikasi', 'success');
+    }, 1000);
+}
+
+function deleteNotif(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus notifikasi ini?')) {
+        showNotification('Menghapus notifikasi...', 'info');
+        
+        // Simulate deletion
+        setTimeout(() => {
+            showNotification('Notifikasi berhasil dihapus', 'success');
+            event.target.closest('.col-xl-6').remove();
+        }, 1000);
+    }
+}
+
+function sendNotif(id) {
+    if (confirm('Apakah Anda yakin ingin mengirim notifikasi ini?')) {
+        showNotification('Mengirim notifikasi...', 'info');
+        
+        // Simulate sending
+        setTimeout(() => {
+            showNotification('Notifikasi berhasil dikirim', 'success');
+        }, 2000);
+    }
+}
+
+function resendNotif(id) {
+    if (confirm('Apakah Anda yakin ingin mengirim ulang notifikasi ini?')) {
+        showNotification('Mengirim ulang notifikasi...', 'info');
+        
+        // Simulate resending
+        setTimeout(() => {
+            showNotification('Notifikasi berhasil dikirim ulang', 'success');
+        }, 2000);
+    }
+}
+
+function retryNotif(id) {
+    if (confirm('Apakah Anda yakin ingin mencoba mengirim ulang notifikasi ini?')) {
+        showNotification('Mencoba mengirim ulang notifikasi...', 'info');
+        
+        // Simulate retry
+        setTimeout(() => {
+            showNotification('Notifikasi berhasil dikirim ulang', 'success');
+        }, 2000);
+    }
+}
+
+function exportNotif() {
+    showNotification('Mengekspor data notifikasi...', 'info');
+    
+    // Simulate export
+    setTimeout(() => {
+        showNotification('Data notifikasi berhasil diekspor', 'success');
+    }, 3000);
+}
+
+// Form submission
+document.querySelector('#addNotifModal .btn-submit').addEventListener('click', function() {
+    const form = document.getElementById('addNotifForm');
+    if (form.checkValidity()) {
+        showNotification('Menyimpan notifikasi...', 'info');
+        bootstrap.Modal.getInstance(document.getElementById('addNotifModal')).hide();
+        form.reset();
+        
+        // Simulate save
+        setTimeout(() => {
+            showNotification('Notifikasi berhasil disimpan', 'success');
+        }, 2000);
+    } else {
+        form.reportValidity();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,602 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manajemen Keuangan - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Manajemen Keuangan</h2>
+        <p class="text-muted">Kelola keuangan dan anggaran desa</p>
+    </div>
+    <div>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#tambahTransaksiModal">
+            <i class="bi bi-plus-circle"></i> Tambah Transaksi
+        </button>
+    </div>
+</div>
+
+<!-- Financial Overview Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">Rp 250M</div>
+                    <div class="stats-label">Total Anggaran</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">Rp 180M</div>
+                    <div class="stats-label">Pendapatan</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-arrow-up-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">Rp 120M</div>
+                    <div class="stats-label">Pengeluaran</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-arrow-down-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">Rp 60M</div>
+                    <div class="stats-label">Saldo</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-xl-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-pie-chart"></i>
+                    Distribusi Anggaran
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="keuanganChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-graph-up"></i>
+                    Tren Keuangan Bulanan
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="trenKeuanganChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <div class="search-box">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" class="form-control search-input" placeholder="Cari transaksi...">
+                </div>
+            </div>
+            <div class="col-md-2 mb-3">
+                <select class="form-select">
+                    <option value="">Semua Jenis</option>
+                    <option value="pendapatan">Pendapatan</option>
+                    <option value="pengeluaran">Pengeluaran</option>
+                </select>
+            </div>
+            <div class="col-md-2 mb-3">
+                <select class="form-select">
+                    <option value="">Semua Kategori</option>
+                    <option value="infrastruktur">Infrastruktur</option>
+                    <option value="pendidikan">Pendidikan</option>
+                    <option value="kesehatan">Kesehatan</option>
+                    <option value="sosial">Sosial</option>
+                </select>
+            </div>
+            <div class="col-md-2 mb-3">
+                <input type="date" class="form-control" placeholder="Dari">
+            </div>
+            <div class="col-md-2 mb-3">
+                <input type="date" class="form-control" placeholder="Sampai">
+            </div>
+            <div class="col-md-1 mb-3">
+                <button class="btn btn-primary w-100">
+                    <i class="bi bi-funnel"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transactions Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-list-ul"></i>
+            Daftar Transaksi
+        </h5>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-download"></i> Export
+            </button>
+            <button class="btn btn-outline-success btn-sm">
+                <i class="bi bi-printer"></i> Print
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th data-sort>No</th>
+                        <th data-sort>Tanggal</th>
+                        <th data-sort>Kategori</th>
+                        <th data-sort>Deskripsi</th>
+                        <th data-sort>Jenis</th>
+                        <th data-sort>Jumlah</th>
+                        <th data-sort>Saldo</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>13 Sep 2024</td>
+                        <td><span class="badge bg-primary">Infrastruktur</span></td>
+                        <td>Pembangunan Jalan Desa</td>
+                        <td><span class="badge bg-danger">Pengeluaran</span></td>
+                        <td class="text-danger">-Rp 15.000.000</td>
+                        <td>Rp 60.000.000</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailTransaksiModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editTransaksiModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>12 Sep 2024</td>
+                        <td><span class="badge bg-success">Pendidikan</span></td>
+                        <td>Bantuan Beasiswa Siswa</td>
+                        <td><span class="badge bg-danger">Pengeluaran</span></td>
+                        <td class="text-danger">-Rp 5.000.000</td>
+                        <td>Rp 75.000.000</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailTransaksiModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editTransaksiModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>11 Sep 2024</td>
+                        <td><span class="badge bg-info">Pemerintahan</span></td>
+                        <td>Dana Desa dari Pemerintah</td>
+                        <td><span class="badge bg-success">Pendapatan</span></td>
+                        <td class="text-success">+Rp 50.000.000</td>
+                        <td>Rp 80.000.000</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailTransaksiModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editTransaksiModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>10 Sep 2024</td>
+                        <td><span class="badge bg-warning">Kesehatan</span></td>
+                        <td>Pembelian Obat-obatan</td>
+                        <td><span class="badge bg-danger">Pengeluaran</span></td>
+                        <td class="text-danger">-Rp 3.000.000</td>
+                        <td>Rp 30.000.000</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailTransaksiModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editTransaksiModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>09 Sep 2024</td>
+                        <td><span class="badge bg-secondary">Sosial</span></td>
+                        <td>Bantuan untuk Warga Miskin</td>
+                        <td><span class="badge bg-danger">Pengeluaran</span></td>
+                        <td class="text-danger">-Rp 7.000.000</td>
+                        <td>Rp 33.000.000</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailTransaksiModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editTransaksiModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <nav aria-label="Pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Tambah Transaksi Modal -->
+<div class="modal fade" id="tambahTransaksiModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Transaksi Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis Transaksi</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Jenis</option>
+                                <option value="pendapatan">Pendapatan</option>
+                                <option value="pengeluaran">Pengeluaran</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Kategori</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Kategori</option>
+                                <option value="infrastruktur">Infrastruktur</option>
+                                <option value="pendidikan">Pendidikan</option>
+                                <option value="kesehatan">Kesehatan</option>
+                                <option value="sosial">Sosial</option>
+                                <option value="pemerintahan">Pemerintahan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Deskripsi</label>
+                        <input type="text" class="form-control" placeholder="Masukkan deskripsi transaksi" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jumlah</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" class="form-control" placeholder="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Catatan</label>
+                        <textarea class="form-control" rows="3" placeholder="Masukkan catatan tambahan"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dokumen Pendukung</label>
+                        <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-success btn-submit">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Transaksi Modal -->
+<div class="modal fade" id="detailTransaksiModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detail Transaksi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Tanggal:</strong></td>
+                                <td>13 September 2024</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Jenis:</strong></td>
+                                <td><span class="badge bg-danger">Pengeluaran</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Kategori:</strong></td>
+                                <td><span class="badge bg-primary">Infrastruktur</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Jumlah:</strong></td>
+                                <td class="text-danger">-Rp 15.000.000</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Saldo Setelah:</strong></td>
+                                <td>Rp 60.000.000</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dibuat Oleh:</strong></td>
+                                <td>Admin Desa</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Diperbarui:</strong></td>
+                                <td>13 September 2024</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Deskripsi:</strong></label>
+                    <p>Pembangunan Jalan Desa</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Catatan:</strong></label>
+                    <p>Pembangunan jalan desa sepanjang 500 meter dengan lebar 4 meter. Pengerjaan dilakukan oleh kontraktor PT Jaya Konstruksi.</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Dokumen Pendukung:</strong></label>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-file-pdf"></i> Invoice.pdf
+                        </a>
+                        <a href="#" class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-file-image"></i> Foto.jpg
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-warning">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Transaksi Modal -->
+<div class="modal fade" id="editTransaksiModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Transaksi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis Transaksi</label>
+                            <select class="form-select" required>
+                                <option value="pendapatan">Pendapatan</option>
+                                <option value="pengeluaran" selected>Pengeluaran</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Kategori</label>
+                            <select class="form-select" required>
+                                <option value="infrastruktur" selected>Infrastruktur</option>
+                                <option value="pendidikan">Pendidikan</option>
+                                <option value="kesehatan">Kesehatan</option>
+                                <option value="sosial">Sosial</option>
+                                <option value="pemerintahan">Pemerintahan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Deskripsi</label>
+                        <input type="text" class="form-control" value="Pembangunan Jalan Desa" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jumlah</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" class="form-control" value="15000000" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal</label>
+                            <input type="date" class="form-control" value="2024-09-13" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Catatan</label>
+                        <textarea class="form-control" rows="3">Pembangunan jalan desa sepanjang 500 meter dengan lebar 4 meter. Pengerjaan dilakukan oleh kontraktor PT Jaya Konstruksi.</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dokumen Pendukung</label>
+                        <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-warning btn-submit">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize financial charts
+    document.addEventListener('DOMContentLoaded', function() {
+        // Budget Distribution Chart
+        const budgetCtx = document.getElementById('keuanganChart').getContext('2d');
+        new Chart(budgetCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Infrastruktur', 'Pendidikan', 'Kesehatan', 'Sosial', 'Pemerintahan'],
+                datasets: [{
+                    data: [40, 25, 15, 10, 10],
+                    backgroundColor: [
+                        '#3498db',
+                        '#27ae60',
+                        '#e74c3c',
+                        '#f39c12',
+                        '#9b59b6'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Financial Trend Chart
+        const trendCtx = document.getElementById('trenKeuanganChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep'],
+                datasets: [{
+                    label: 'Pendapatan',
+                    data: [50, 55, 60, 58, 65, 70, 75, 80, 85],
+                    borderColor: '#27ae60',
+                    backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'Pengeluaran',
+                    data: [30, 35, 40, 38, 45, 50, 55, 60, 65],
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(0,0,0,0.1)'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

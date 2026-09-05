@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout - Panel Admin Desa</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'css/admin.css' %}" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logout-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .logout-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+            }
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+            }
+        }
+        
+        .btn-logout {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn-cancel {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(108, 117, 125, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logout-container">
+            <div class="logout-icon">
+                <i class="bi bi-box-arrow-right text-white" style="font-size: 3rem;"></i>
+            </div>
+            
+            <h2 class="mb-3">Konfirmasi Logout</h2>
+            <p class="text-muted mb-4">
+                Apakah Anda yakin ingin keluar dari sistem?<br>
+                Semua perubahan yang belum disimpan akan hilang.
+            </p>
+            
+            <div class="row">
+                <div class="col-6">
+                    <button type="button" class="btn btn-secondary btn-cancel w-100" onclick="cancelLogout()">
+                        <i class="bi bi-x-circle"></i> Batal
+                    </button>
+                </div>
+                <div class="col-6">
+                    <button type="button" class="btn btn-danger btn-logout w-100" onclick="confirmLogout()">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle"></i>
+                    Anda akan diarahkan ke halaman login setelah logout.
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function cancelLogout() {
+            // Redirect back to dashboard
+            window.location.href = '/dashboard/';
+        }
+        
+        function confirmLogout() {
+            // Show loading state
+            const logoutBtn = document.querySelector('.btn-logout');
+            const originalText = logoutBtn.innerHTML;
+            
+            logoutBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Logging out...';
+            logoutBtn.disabled = true;
+            
+            // Simulate logout process
+            setTimeout(() => {
+                // Clear any stored data (in a real app, you would clear session/tokens)
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                // Redirect to login page
+                window.location.href = '/login/';
+            }, 2000);
+        }
+        
+        // Auto-redirect after 30 seconds if no action
+        let autoRedirectTimer = setTimeout(() => {
+            confirmLogout();
+        }, 30000);
+        
+        // Clear timer if user takes action
+        document.addEventListener('click', function() {
+            clearTimeout(autoRedirectTimer);
+        });
+        
+        // Show countdown
+        let countdown = 30;
+        const countdownElement = document.createElement('div');
+        countdownElement.className = 'mt-3 text-muted';
+        countdownElement.innerHTML = `<small>Auto-logout dalam <span id="countdown">${countdown}</span> detik</small>`;
+        document.querySelector('.logout-container').appendChild(countdownElement);
+        
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            document.getElementById('countdown').textContent = countdown;
+            
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

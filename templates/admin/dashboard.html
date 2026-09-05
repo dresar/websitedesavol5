@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Dashboard</h2>
+        <p class="text-muted">Selamat datang di Panel Admin Desa</p>
+    </div>
+    <div>
+        <button class="btn btn-primary btn-print">
+            <i class="bi bi-printer"></i> Cetak Laporan
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">1,450</div>
+                    <div class="stats-label">Total Penduduk</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">Rp 250M</div>
+                    <div class="stats-label">Anggaran Desa</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">45</div>
+                    <div class="stats-label">Surat Pending</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-envelope"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">12</div>
+                    <div class="stats-label">Kegiatan Aktif</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-calendar-event"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts and Tables Row -->
+<div class="row">
+    <!-- Population Growth Chart -->
+    <div class="col-xl-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-graph-up"></i>
+                    Pertumbuhan Penduduk
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="dashboardChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activities -->
+    <div class="col-xl-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history"></i>
+                    Aktivitas Terbaru
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex align-items-center px-0">
+                        <div class="me-3">
+                            <i class="bi bi-person-plus text-success"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Penduduk Baru</h6>
+                            <small class="text-muted">5 menit yang lalu</small>
+                        </div>
+                    </div>
+                    <div class="list-group-item d-flex align-items-center px-0">
+                        <div class="me-3">
+                            <i class="bi bi-envelope text-warning"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Surat Masuk</h6>
+                            <small class="text-muted">15 menit yang lalu</small>
+                        </div>
+                    </div>
+                    <div class="list-group-item d-flex align-items-center px-0">
+                        <div class="me-3">
+                            <i class="bi bi-cash text-primary"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Transaksi Keuangan</h6>
+                            <small class="text-muted">1 jam yang lalu</small>
+                        </div>
+                    </div>
+                    <div class="list-group-item d-flex align-items-center px-0">
+                        <div class="me-3">
+                            <i class="bi bi-calendar text-info"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Kegiatan Baru</h6>
+                            <small class="text-muted">2 jam yang lalu</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions and Recent Data -->
+<div class="row">
+    <!-- Quick Actions -->
+    <div class="col-xl-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-lightning"></i>
+                    Aksi Cepat
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'penduduk' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-person-plus"></i>
+                        Tambah Penduduk
+                    </a>
+                    <a href="{% url 'surat' %}" class="btn btn-outline-success">
+                        <i class="bi bi-envelope-plus"></i>
+                        Buat Surat Baru
+                    </a>
+                    <a href="{% url 'keuangan' %}" class="btn btn-outline-warning">
+                        <i class="bi bi-cash-stack"></i>
+                        Catat Transaksi
+                    </a>
+                    <a href="#" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#reportModal">
+                        <i class="bi bi-file-earmark-text"></i>
+                        Generate Laporan
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Penduduk -->
+    <div class="col-xl-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-people"></i>
+                    Penduduk Terbaru
+                </h5>
+                <a href="{% url 'penduduk' %}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nama</th>
+                                <th>NIK</th>
+                                <th>Alamat</th>
+                                <th>Status</th>
+                                <th>Tanggal Daftar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                            A
+                                        </div>
+                                        Ahmad Susanto
+                                    </div>
+                                </td>
+                                <td>3201234567890123</td>
+                                <td>RT 01/RW 01</td>
+                                <td><span class="badge bg-success">Aktif</span></td>
+                                <td>13 Sep 2024</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                            S
+                                        </div>
+                                        Siti Nurhaliza
+                                    </div>
+                                </td>
+                                <td>3201234567890124</td>
+                                <td>RT 02/RW 01</td>
+                                <td><span class="badge bg-success">Aktif</span></td>
+                                <td>12 Sep 2024</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                            B
+                                        </div>
+                                        Budi Santoso
+                                    </div>
+                                </td>
+                                <td>3201234567890125</td>
+                                <td>RT 03/RW 02</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td>11 Sep 2024</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Generate Laporan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Jenis Laporan</label>
+                        <select class="form-select">
+                            <option>Laporan Penduduk</option>
+                            <option>Laporan Keuangan</option>
+                            <option>Laporan Surat</option>
+                            <option>Laporan Kegiatan</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Periode</label>
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="date" class="form-control" placeholder="Dari">
+                            </div>
+                            <div class="col-6">
+                                <input type="date" class="form-control" placeholder="Sampai">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Format</label>
+                        <select class="form-select">
+                            <option>PDF</option>
+                            <option>Excel</option>
+                            <option>Word</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary btn-submit">Generate</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize dashboard chart
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('dashboardChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep'],
+                datasets: [{
+                    label: 'Penduduk',
+                    data: [1200, 1250, 1300, 1280, 1350, 1400, 1420, 1450, 1450],
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(0,0,0,0.1)'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

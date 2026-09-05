@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Panel Admin Desa{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    {% load static %}
+    <link href="{% static 'css/admin.css' %}" rel="stylesheet">
+    <link href="{% static 'css/theme.css' %}" rel="stylesheet">
+    <link href="{% static 'css/animations.css' %}" rel="stylesheet">
+    <link href="{% static 'css/purple-theme.css' %}" rel="stylesheet">
+    
+    <!-- Custom Purple Theme CSS -->
+    <style>
+        :root {
+            --primary-color: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --primary-light: #a78bfa;
+            --secondary-color: #f3f4f6;
+            --accent-color: #ec4899;
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 70px;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+
+        .sidebar-header h4 {
+            color: white;
+            font-weight: 600;
+            margin: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-header h4 {
+            opacity: 0;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .sidebar-nav .nav-item {
+            margin: 0.25rem 0;
+        }
+
+        .sidebar-nav .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-radius: 0 25px 25px 0;
+            margin-right: 1rem;
+            position: relative;
+        }
+
+        .sidebar-nav .nav-link:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .sidebar-nav .nav-link.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-nav .nav-link i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-nav .nav-link .ms-auto {
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-nav .nav-link[aria-expanded="true"] .ms-auto {
+            transform: rotate(180deg);
+        }
+
+        .sidebar.collapsed .nav-link span {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .nav-link .ms-auto {
+            opacity: 0;
+        }
+
+        .sidebar.collapsed .nav-link {
+            justify-content: center;
+            margin-right: 0;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            margin: 0.25rem auto;
+        }
+
+        .sidebar.collapsed .nav-link i {
+            margin-right: 0;
+        }
+
+        /* Collapse Styles */
+        .collapse {
+            background: rgba(0,0,0,0.1);
+            border-radius: 0 0 15px 0;
+            margin-right: 1rem;
+        }
+
+        .collapse .nav-link {
+            padding: 0.5rem 1.5rem 0.5rem 3rem;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .collapse .nav-link:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .collapse .nav-link.active {
+            color: white;
+            background: rgba(255,255,255,0.15);
+        }
+
+        .sidebar.collapsed .collapse {
+            display: none !important;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+            background: #f8fafc;
+        }
+
+        .main-content.sidebar-collapsed {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        /* Top Navigation */
+        .navbar {
+            background: white !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .navbar .btn-outline-secondary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .navbar .btn-outline-secondary:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: var(--sidebar-width);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .main-content.sidebar-collapsed {
+                margin-left: 0;
+            }
+        }
+
+        /* Overlay for mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        /* Custom Scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
+        /* Animation for dropdown */
+        .collapse {
+            transition: all 0.3s ease;
+        }
+
+        .collapse.show {
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Badge styles */
+        .badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        /* Dropdown menu styles */
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            padding: 0.5rem 0;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Stats cards */
+        .stats-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .stats-icon {
+            font-size: 2.5rem;
+            opacity: 0.3;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h4 class="text-white">
+                <i class="bi bi-building"></i>
+                Desa Admin
+            </h4>
+        </div>
+        <nav class="sidebar-nav">
+            <ul class="nav flex-column">
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+                <!-- Manajemen Data -->
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#dataManagement" role="button" aria-expanded="false" aria-controls="dataManagement">
+                        <i class="bi bi-database"></i>
+                        <span>Manajemen Data</span>
+                        <i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <div class="collapse" id="dataManagement">
+                        <ul class="nav flex-column ms-3">
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'penduduk' %}active{% endif %}" href="{% url 'penduduk' %}">
+                                    <i class="bi bi-people"></i>
+                                    <span>Penduduk</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'surat' %}active{% endif %}" href="{% url 'surat' %}">
+                                    <i class="bi bi-envelope"></i>
+                                    <span>Surat Menyurat</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'keuangan' %}active{% endif %}" href="{% url 'keuangan' %}">
+                                    <i class="bi bi-cash-stack"></i>
+                                    <span>Keuangan</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/kegiatan/">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span>Kegiatan</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/infrastruktur/">
+                                    <i class="bi bi-building"></i>
+                                    <span>Infrastruktur</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- Laporan & Monitoring -->
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#reportsMonitoring" role="button" aria-expanded="false" aria-controls="reportsMonitoring">
+                        <i class="bi bi-graph-up"></i>
+                        <span>Laporan & Monitoring</span>
+                        <i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <div class="collapse" id="reportsMonitoring">
+                        <ul class="nav flex-column ms-3">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/laporan/">
+                                    <i class="bi bi-file-text"></i>
+                                    <span>Laporan Umum</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/laporan-keuangan/">
+                                    <i class="bi bi-calculator"></i>
+                                    <span>Laporan Keuangan</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/monitoring/">
+                                    <i class="bi bi-activity"></i>
+                                    <span>Monitoring Sistem</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/analytics/">
+                                    <i class="bi bi-bar-chart"></i>
+                                    <span>Analytics</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- Sistem & Keamanan -->
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#systemSecurity" role="button" aria-expanded="false" aria-controls="systemSecurity">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Sistem & Keamanan</span>
+                        <i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <div class="collapse" id="systemSecurity">
+                        <ul class="nav flex-column ms-3">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/audit-log/">
+                                    <i class="bi bi-list-check"></i>
+                                    <span>Audit Log</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/backup/">
+                                    <i class="bi bi-cloud-arrow-up"></i>
+                                    <span>Backup & Restore</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/notifikasi/">
+                                    <i class="bi bi-bell"></i>
+                                    <span>Notifikasi</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- Pengaturan -->
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#settings" role="button" aria-expanded="false" aria-controls="settings">
+                        <i class="bi bi-gear"></i>
+                        <span>Pengaturan</span>
+                        <i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <div class="collapse" id="settings">
+                        <ul class="nav flex-column ms-3">
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'profil' %}active{% endif %}" href="{% url 'profil' %}">
+                                    <i class="bi bi-person-gear"></i>
+                                    <span>Profil</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/pengaturan/">
+                                    <i class="bi bi-sliders"></i>
+                                    <span>Pengaturan Sistem</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/bantuan/">
+                                    <i class="bi bi-question-circle"></i>
+                                    <span>Bantuan</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- Admin Panel -->
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/" target="_blank">
+                        <i class="bi bi-gear-fill"></i>
+                        <span>Django Admin</span>
+                        <i class="bi bi-box-arrow-up-right ms-auto"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <!-- Top Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+            <div class="container-fluid">
+                <button class="btn btn-outline-secondary me-3" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                
+                <div class="navbar-nav ms-auto">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-bell"></i>
+                            <span class="badge bg-danger rounded-pill">3</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">Notifikasi 1</a></li>
+                            <li><a class="dropdown-item" href="#">Notifikasi 2</a></li>
+                            <li><a class="dropdown-item" href="#">Notifikasi 3</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i>
+                            Admin Desa
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'profil' %}">Profil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Content -->
+        <div class="container-fluid py-4">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{% static 'js/admin.js' %}"></script>
+    
+    <!-- Sidebar Responsive JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mainContent = document.getElementById('main-content');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const isMobile = window.innerWidth <= 768;
+
+            // Toggle sidebar
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    if (isMobile) {
+                        // Mobile: show/hide sidebar with overlay
+                        sidebar.classList.toggle('show');
+                        sidebarOverlay.classList.toggle('show');
+                        document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+                    } else {
+                        // Desktop: collapse/expand sidebar
+                        sidebar.classList.toggle('collapsed');
+                        mainContent.classList.toggle('sidebar-collapsed');
+                    }
+                });
+            }
+
+            // Close sidebar on overlay click (mobile)
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', function() {
+                    sidebar.classList.remove('show');
+                    sidebarOverlay.classList.remove('show');
+                    document.body.style.overflow = '';
+                });
+            }
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                const newIsMobile = window.innerWidth <= 768;
+                
+                if (newIsMobile !== isMobile) {
+                    // Reset sidebar state on breakpoint change
+                    sidebar.classList.remove('show', 'collapsed');
+                    mainContent.classList.remove('sidebar-collapsed');
+                    sidebarOverlay.classList.remove('show');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Auto-collapse dropdowns on mobile
+            if (isMobile) {
+                const collapseElements = document.querySelectorAll('.collapse');
+                collapseElements.forEach(collapse => {
+                    collapse.addEventListener('show.bs.collapse', function() {
+                        // Close other open dropdowns
+                        collapseElements.forEach(otherCollapse => {
+                            if (otherCollapse !== collapse && otherCollapse.classList.contains('show')) {
+                                const bsCollapse = new bootstrap.Collapse(otherCollapse, {toggle: false});
+                                bsCollapse.hide();
+                            }
+                        });
+                    });
+                });
+            }
+
+            // Smooth scroll for sidebar
+            const sidebarNav = document.querySelector('.sidebar-nav');
+            if (sidebarNav) {
+                sidebarNav.addEventListener('click', function(e) {
+                    if (e.target.closest('.nav-link')) {
+                        // Close mobile sidebar after navigation
+                        if (isMobile) {
+                            setTimeout(() => {
+                                sidebar.classList.remove('show');
+                                sidebarOverlay.classList.remove('show');
+                                document.body.style.overflow = '';
+                            }, 300);
+                        }
+                    }
+                });
+            }
+
+            // Initialize AOS (Animate On Scroll)
+            if (typeof AOS !== 'undefined') {
+                AOS.init({
+                    duration: 800,
+                    easing: 'ease-in-out',
+                    once: true,
+                    offset: 100
+                });
+            }
+
+            // Add active class to current page
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+            
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && currentPath.includes(href) && href !== '/') {
+                    link.classList.add('active');
+                    
+                    // Expand parent dropdown if exists
+                    const parentCollapse = link.closest('.collapse');
+                    if (parentCollapse) {
+                        const toggleButton = document.querySelector(`[href="#${parentCollapse.id}"]`);
+                        if (toggleButton) {
+                            toggleButton.setAttribute('aria-expanded', 'true');
+                            parentCollapse.classList.add('show');
+                        }
+                    }
+                }
+            });
+
+            // Add hover effects for desktop
+            if (!isMobile) {
+                const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
+                navItems.forEach(item => {
+                    item.addEventListener('mouseenter', function() {
+                        if (sidebar.classList.contains('collapsed')) {
+                            // Show tooltip on hover for collapsed sidebar
+                            const link = item.querySelector('.nav-link');
+                            const text = link.querySelector('span').textContent;
+                            
+                            // Create tooltip
+                            const tooltip = document.createElement('div');
+                            tooltip.className = 'sidebar-tooltip';
+                            tooltip.textContent = text;
+                            tooltip.style.cssText = `
+                                position: absolute;
+                                left: 100%;
+                                top: 50%;
+                                transform: translateY(-50%);
+                                background: #1f2937;
+                                color: white;
+                                padding: 0.5rem 1rem;
+                                border-radius: 6px;
+                                font-size: 0.875rem;
+                                white-space: nowrap;
+                                z-index: 1001;
+                                margin-left: 10px;
+                                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                            `;
+                            
+                            item.style.position = 'relative';
+                            item.appendChild(tooltip);
+                        }
+                    });
+                    
+                    item.addEventListener('mouseleave', function() {
+                        const tooltip = item.querySelector('.sidebar-tooltip');
+                        if (tooltip) {
+                            tooltip.remove();
+                        }
+                    });
+                });
+            }
+        });
+
+        // Notification function
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = `
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

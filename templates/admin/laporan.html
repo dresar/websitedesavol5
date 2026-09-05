@@ -1,0 +1,683 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manajemen Laporan - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Manajemen Laporan</h2>
+        <p class="text-muted">Generate dan kelola laporan desa</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#generateReportModal">
+            <i class="bi bi-file-earmark-plus"></i> Generate Laporan
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">48</div>
+                    <div class="stats-label">Total Laporan</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">35</div>
+                    <div class="stats-label">Laporan Selesai</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">8</div>
+                    <div class="stats-label">Dalam Proses</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-clock"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">5</div>
+                    <div class="stats-label">Gagal Generate</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-x-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter and Search -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Cari laporan..." id="searchReport">
+        </div>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" id="filterStatus">
+            <option value="">Semua Status</option>
+            <option value="selesai">Selesai</option>
+            <option value="proses">Dalam Proses</option>
+            <option value="gagal">Gagal</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" id="filterType">
+            <option value="">Semua Jenis</option>
+            <option value="penduduk">Penduduk</option>
+            <option value="keuangan">Keuangan</option>
+            <option value="kegiatan">Kegiatan</option>
+            <option value="surat">Surat</option>
+            <option value="infrastruktur">Infrastruktur</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+            <i class="bi bi-arrow-clockwise"></i> Reset
+        </button>
+    </div>
+</div>
+
+<!-- Reports List -->
+<div class="row" id="reportsList">
+    <!-- Report Card 1 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up">
+        <div class="card report-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Laporan Data Penduduk Bulanan</h5>
+                        <span class="badge bg-success">Selesai</span>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewReport(1)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="downloadReport(1)"><i class="bi bi-download"></i> Download</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="shareReport(1)"><i class="bi bi-share"></i> Share</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteReport(1)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Laporan data penduduk desa untuk bulan September 2024
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-calendar text-primary"></i>
+                            <span>15 Sep 2024</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-file-pdf text-danger"></i>
+                            <span>PDF (2.3 MB)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-person text-info"></i>
+                            <span>1,450 Penduduk</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span>2 menit lalu</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-light text-dark">Penduduk</span>
+                    </div>
+                    <div class="report-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewReport(1)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="downloadReport(1)">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Card 2 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="card report-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Laporan Keuangan Triwulan</h5>
+                        <span class="badge bg-warning">Dalam Proses</span>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewReport(2)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="downloadReport(2)"><i class="bi bi-download"></i> Download</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="shareReport(2)"><i class="bi bi-share"></i> Share</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteReport(2)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Laporan keuangan desa untuk triwulan III 2024
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-calendar text-primary"></i>
+                            <span>13 Sep 2024</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-file-excel text-success"></i>
+                            <span>Excel (1.8 MB)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-cash text-info"></i>
+                            <span>Rp 250M Anggaran</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span>5 menit lalu</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-light text-dark">Keuangan</span>
+                    </div>
+                    <div class="report-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewReport(2)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="downloadReport(2)">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Card 3 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="card report-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Laporan Kegiatan Bulanan</h5>
+                        <span class="badge bg-success">Selesai</span>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewReport(3)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="downloadReport(3)"><i class="bi bi-download"></i> Download</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="shareReport(3)"><i class="bi bi-share"></i> Share</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteReport(3)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Laporan kegiatan desa untuk bulan Agustus 2024
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-calendar text-primary"></i>
+                            <span>10 Sep 2024</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-file-word text-primary"></i>
+                            <span>Word (3.1 MB)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-calendar-event text-info"></i>
+                            <span>12 Kegiatan</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span>1 jam lalu</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-light text-dark">Kegiatan</span>
+                    </div>
+                    <div class="report-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewReport(3)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="downloadReport(3)">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Card 4 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="card report-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Laporan Infrastruktur Tahunan</h5>
+                        <span class="badge bg-danger">Gagal</span>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewReport(4)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="downloadReport(4)"><i class="bi bi-download"></i> Download</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="shareReport(4)"><i class="bi bi-share"></i> Share</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteReport(4)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Laporan kondisi infrastruktur desa tahun 2024
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-calendar text-primary"></i>
+                            <span>08 Sep 2024</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-exclamation-triangle text-warning"></i>
+                            <span>Error Generate</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-building text-info"></i>
+                            <span>25 Infrastruktur</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="report-info">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span>2 jam lalu</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-light text-dark">Infrastruktur</span>
+                    </div>
+                    <div class="report-actions">
+                        <button class="btn btn-sm btn-outline-warning" onclick="retryReport(4)">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteReport(4)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Generate Report Modal -->
+<div class="modal fade" id="generateReportModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Generate Laporan Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="generateReportForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis Laporan</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Jenis Laporan</option>
+                                <option value="penduduk">Data Penduduk</option>
+                                <option value="keuangan">Keuangan</option>
+                                <option value="kegiatan">Kegiatan</option>
+                                <option value="surat">Surat Menyurat</option>
+                                <option value="infrastruktur">Infrastruktur</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Format Output</label>
+                            <select class="form-select" required>
+                                <option value="pdf">PDF</option>
+                                <option value="excel">Excel</option>
+                                <option value="word">Word</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Periode Mulai</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Periode Selesai</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Filter Tambahan</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="includeCharts">
+                                    <label class="form-check-label" for="includeCharts">
+                                        Sertakan Grafik
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="includePhotos">
+                                    <label class="form-check-label" for="includePhotos">
+                                        Sertakan Foto
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Keterangan Tambahan</label>
+                        <textarea class="form-control" rows="3" placeholder="Tambahkan catatan atau keterangan khusus untuk laporan..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary btn-submit">
+                    <i class="bi bi-file-earmark-plus"></i> Generate Laporan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Report Modal -->
+<div class="modal fade" id="viewReportModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Preview Laporan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <div class="report-preview" style="height: 500px; background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                        <i class="bi bi-file-earmark-text" style="font-size: 48px; color: #6c757d; margin-bottom: 16px;"></i>
+                        <h5 class="text-muted">Preview Laporan</h5>
+                        <p class="text-muted">Preview laporan akan ditampilkan di sini</p>
+                        <button class="btn btn-primary" onclick="downloadReportFromView()">
+                            <i class="bi bi-download"></i> Download Laporan
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-success" onclick="downloadReportFromView()">
+                    <i class="bi bi-download"></i> Download
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.report-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.report-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.report-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.report-info i {
+    margin-right: 8px;
+    width: 16px;
+}
+
+.report-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.report-preview {
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.badge.bg-light {
+    background-color: #e9ecef !important;
+    color: #495057 !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Search and filter functionality
+document.getElementById('searchReport').addEventListener('input', filterReports);
+document.getElementById('filterStatus').addEventListener('change', filterReports);
+document.getElementById('filterType').addEventListener('change', filterReports);
+
+function filterReports() {
+    const searchTerm = document.getElementById('searchReport').value.toLowerCase();
+    const statusFilter = document.getElementById('filterStatus').value;
+    const typeFilter = document.getElementById('filterType').value;
+    
+    const cards = document.querySelectorAll('.report-card');
+    
+    cards.forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const description = card.querySelector('.card-text').textContent.toLowerCase();
+        const status = card.querySelector('.badge').textContent.toLowerCase();
+        const type = card.querySelector('.badge.bg-light').textContent.toLowerCase();
+        
+        const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+        const matchesStatus = !statusFilter || status.includes(statusFilter);
+        const matchesType = !typeFilter || type.includes(typeFilter);
+        
+        if (matchesSearch && matchesStatus && matchesType) {
+            card.closest('.col-xl-6').style.display = 'block';
+        } else {
+            card.closest('.col-xl-6').style.display = 'none';
+        }
+    });
+}
+
+function resetFilters() {
+    document.getElementById('searchReport').value = '';
+    document.getElementById('filterStatus').value = '';
+    document.getElementById('filterType').value = '';
+    filterReports();
+}
+
+// CRUD operations
+function viewReport(id) {
+    new bootstrap.Modal(document.getElementById('viewReportModal')).show();
+}
+
+function downloadReport(id) {
+    showNotification('Laporan sedang didownload...', 'info');
+    
+    // Simulate download
+    setTimeout(() => {
+        showNotification('Laporan berhasil didownload', 'success');
+    }, 2000);
+}
+
+function shareReport(id) {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Laporan Desa',
+            text: 'Lihat laporan desa terbaru',
+            url: window.location.href
+        });
+    } else {
+        // Fallback for browsers that don't support Web Share API
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            showNotification('Link laporan berhasil disalin ke clipboard', 'success');
+        });
+    }
+}
+
+function deleteReport(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus laporan ini?')) {
+        showNotification('Laporan berhasil dihapus', 'success');
+        event.target.closest('.col-xl-6').remove();
+    }
+}
+
+function retryReport(id) {
+    showNotification('Mencoba generate ulang laporan...', 'info');
+    
+    // Simulate retry
+    setTimeout(() => {
+        showNotification('Laporan berhasil digenerate ulang', 'success');
+        // Update status badge
+        const badge = event.target.closest('.card').querySelector('.badge');
+        badge.textContent = 'Selesai';
+        badge.className = 'badge bg-success';
+    }, 3000);
+}
+
+function downloadReportFromView() {
+    bootstrap.Modal.getInstance(document.getElementById('viewReportModal')).hide();
+    downloadReport();
+}
+
+// Form submission
+document.querySelector('#generateReportModal .btn-submit').addEventListener('click', function() {
+    const form = document.getElementById('generateReportForm');
+    if (form.checkValidity()) {
+        showNotification('Laporan sedang digenerate, mohon tunggu...', 'info');
+        bootstrap.Modal.getInstance(document.getElementById('generateReportModal')).hide();
+        form.reset();
+        
+        // Simulate report generation
+        setTimeout(() => {
+            showNotification('Laporan berhasil digenerate', 'success');
+        }, 3000);
+    } else {
+        form.reportValidity();
+    }
+});
+</script>
+{% endblock %}

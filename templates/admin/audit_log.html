@@ -1,0 +1,696 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Audit Log - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Audit Log</h2>
+        <p class="text-muted">Catatan aktivitas dan perubahan sistem</p>
+    </div>
+    <div>
+        <button class="btn btn-outline-primary" onclick="exportAuditLog()">
+            <i class="bi bi-download"></i> Export Log
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">1,247</div>
+                    <div class="stats-label">Total Aktivitas</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-activity"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">856</div>
+                    <div class="stats-label">Login Berhasil</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">23</div>
+                    <div class="stats-label">Login Gagal</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-x-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">368</div>
+                    <div class="stats-label">Perubahan Data</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-pencil-square"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter and Search -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Cari aktivitas..." id="searchAudit">
+        </div>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterAction">
+            <option value="">Semua Aksi</option>
+            <option value="login">Login</option>
+            <option value="logout">Logout</option>
+            <option value="create">Buat</option>
+            <option value="update">Update</option>
+            <option value="delete">Hapus</option>
+            <option value="view">Lihat</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterUser">
+            <option value="">Semua User</option>
+            <option value="admin">Admin</option>
+            <option value="staff">Staff</option>
+            <option value="operator">Operator</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterStatus">
+            <option value="">Semua Status</option>
+            <option value="success">Berhasil</option>
+            <option value="failed">Gagal</option>
+            <option value="warning">Peringatan</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <div class="d-flex gap-2">
+            <input type="date" class="form-control" id="filterDate">
+            <button class="btn btn-outline-secondary" onclick="resetFilters()">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Audit Log Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-list-ul"></i> Daftar Aktivitas
+        </h5>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary" onclick="refreshLog()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="clearOldLogs()">
+                <i class="bi bi-trash"></i> Hapus Lama
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Waktu</th>
+                        <th>User</th>
+                        <th>Aksi</th>
+                        <th>Deskripsi</th>
+                        <th>IP Address</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="auditTableBody">
+                    <!-- Audit Log Row 1 -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">13 Sep 2024</span>
+                                <small class="text-muted">14:30:25</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    A
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Admin</div>
+                                    <small class="text-muted">admin@sukamaju.id</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">CREATE</span>
+                        </td>
+                        <td>
+                            <div>
+                                <div class="fw-bold">Menambah data penduduk baru</div>
+                                <small class="text-muted">NIK: 3201234567890123</small>
+                            </div>
+                        </td>
+                        <td>
+                            <code>192.168.1.100</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">Berhasil</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewAuditDetail(1)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Audit Log Row 2 -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">13 Sep 2024</span>
+                                <small class="text-muted">14:25:10</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    S
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Staff</div>
+                                    <small class="text-muted">staff@sukamaju.id</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary">LOGIN</span>
+                        </td>
+                        <td>
+                            <div>
+                                <div class="fw-bold">Login ke sistem</div>
+                                <small class="text-muted">Browser: Chrome 117.0</small>
+                            </div>
+                        </td>
+                        <td>
+                            <code>192.168.1.101</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">Berhasil</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewAuditDetail(2)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Audit Log Row 3 -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">13 Sep 2024</span>
+                                <small class="text-muted">14:20:45</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-danger text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    ?
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Unknown</div>
+                                    <small class="text-muted">unknown@unknown.com</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-danger">LOGIN</span>
+                        </td>
+                        <td>
+                            <div>
+                                <div class="fw-bold">Percobaan login gagal</div>
+                                <small class="text-muted">Username: hacker123</small>
+                            </div>
+                        </td>
+                        <td>
+                            <code>192.168.1.200</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-danger">Gagal</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewAuditDetail(3)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Audit Log Row 4 -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">13 Sep 2024</span>
+                                <small class="text-muted">14:15:30</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    O
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Operator</div>
+                                    <small class="text-muted">operator@sukamaju.id</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning">UPDATE</span>
+                        </td>
+                        <td>
+                            <div>
+                                <div class="fw-bold">Mengubah data keuangan</div>
+                                <small class="text-muted">ID Transaksi: TXN-001</small>
+                            </div>
+                        </td>
+                        <td>
+                            <code>192.168.1.102</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">Berhasil</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewAuditDetail(4)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Audit Log Row 5 -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">13 Sep 2024</span>
+                                <small class="text-muted">14:10:15</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    A
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Admin</div>
+                                    <small class="text-muted">admin@sukamaju.id</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">VIEW</span>
+                        </td>
+                        <td>
+                            <div>
+                                <div class="fw-bold">Melihat laporan penduduk</div>
+                                <small class="text-muted">Export ke PDF</small>
+                            </div>
+                        </td>
+                        <td>
+                            <code>192.168.1.100</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">Berhasil</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewAuditDetail(5)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Audit Log Row 6 -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">13 Sep 2024</span>
+                                <small class="text-muted">14:05:00</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    S
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Staff</div>
+                                    <small class="text-muted">staff@sukamaju.id</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-danger">DELETE</span>
+                        </td>
+                        <td>
+                            <div>
+                                <div class="fw-bold">Menghapus data surat</div>
+                                <small class="text-muted">ID Surat: SUR-001</small>
+                            </div>
+                        </td>
+                        <td>
+                            <code>192.168.1.101</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning">Peringatan</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewAuditDetail(6)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <small class="text-muted">Menampilkan 6 dari 1,247 aktivitas</small>
+            </div>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                    <li class="page-item active">
+                        <a class="page-link" href="#">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">3</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Audit Detail Modal -->
+<div class="modal fade" id="auditDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detail Aktivitas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Informasi Umum</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>Waktu:</strong></td>
+                                <td id="detailTime">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>User:</strong></td>
+                                <td id="detailUser">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Aksi:</strong></td>
+                                <td id="detailAction">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status:</strong></td>
+                                <td id="detailStatus">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>IP Address:</strong></td>
+                                <td id="detailIP">-</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Informasi Teknis</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>Browser:</strong></td>
+                                <td id="detailBrowser">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>OS:</strong></td>
+                                <td id="detailOS">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>User Agent:</strong></td>
+                                <td id="detailUserAgent">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Session ID:</strong></td>
+                                <td id="detailSession">-</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Deskripsi Detail</h6>
+                    <div class="alert alert-light">
+                        <p id="detailDescription" class="mb-0">-</p>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Data yang Diubah</h6>
+                    <div class="bg-light p-3 rounded">
+                        <pre id="detailData" class="mb-0"><code>-</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" onclick="exportAuditDetail()">Export Detail</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+code {
+    font-size: 0.875em;
+    background-color: #f8f9fa;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+pre {
+    font-size: 0.875em;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.pagination-sm .page-link {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Search and filter functionality
+document.getElementById('searchAudit').addEventListener('input', filterAuditLog);
+document.getElementById('filterAction').addEventListener('change', filterAuditLog);
+document.getElementById('filterUser').addEventListener('change', filterAuditLog);
+document.getElementById('filterStatus').addEventListener('change', filterAuditLog);
+document.getElementById('filterDate').addEventListener('change', filterAuditLog);
+
+function filterAuditLog() {
+    const searchTerm = document.getElementById('searchAudit').value.toLowerCase();
+    const actionFilter = document.getElementById('filterAction').value;
+    const userFilter = document.getElementById('filterUser').value;
+    const statusFilter = document.getElementById('filterStatus').value;
+    const dateFilter = document.getElementById('filterDate').value;
+    
+    const rows = document.querySelectorAll('#auditTableBody tr');
+    
+    rows.forEach(row => {
+        const description = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+        const action = row.querySelector('td:nth-child(3) .badge').textContent.toLowerCase();
+        const user = row.querySelector('td:nth-child(2) .fw-bold').textContent.toLowerCase();
+        const status = row.querySelector('td:nth-child(6) .badge').textContent.toLowerCase();
+        const date = row.querySelector('td:nth-child(1) .fw-bold').textContent;
+        
+        const matchesSearch = description.includes(searchTerm);
+        const matchesAction = !actionFilter || action.includes(actionFilter);
+        const matchesUser = !userFilter || user.includes(userFilter);
+        const matchesStatus = !statusFilter || status.includes(statusFilter);
+        const matchesDate = !dateFilter || date.includes(dateFilter);
+        
+        if (matchesSearch && matchesAction && matchesUser && matchesStatus && matchesDate) {
+            row.style.display = 'table-row';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function resetFilters() {
+    document.getElementById('searchAudit').value = '';
+    document.getElementById('filterAction').value = '';
+    document.getElementById('filterUser').value = '';
+    document.getElementById('filterStatus').value = '';
+    document.getElementById('filterDate').value = '';
+    filterAuditLog();
+}
+
+// View audit detail
+function viewAuditDetail(id) {
+    const auditData = {
+        1: {
+            time: '13 Sep 2024 14:30:25',
+            user: 'Admin (admin@sukamaju.id)',
+            action: 'CREATE',
+            status: 'Berhasil',
+            ip: '192.168.1.100',
+            browser: 'Chrome 117.0.5938.132',
+            os: 'Windows 10',
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            session: 'sess_abc123def456',
+            description: 'Admin berhasil menambahkan data penduduk baru dengan NIK 3201234567890123. Data yang ditambahkan meliputi nama lengkap, alamat, tanggal lahir, dan informasi kontak.',
+            data: JSON.stringify({
+                nik: '3201234567890123',
+                nama: 'Ahmad Susanto',
+                alamat: 'RT 01/RW 01',
+                tanggal_lahir: '1990-05-15',
+                jenis_kelamin: 'Laki-laki'
+            }, null, 2)
+        },
+        2: {
+            time: '13 Sep 2024 14:25:10',
+            user: 'Staff (staff@sukamaju.id)',
+            action: 'LOGIN',
+            status: 'Berhasil',
+            ip: '192.168.1.101',
+            browser: 'Chrome 117.0.5938.132',
+            os: 'Windows 11',
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            session: 'sess_xyz789abc123',
+            description: 'Staff berhasil login ke sistem menggunakan kredensial yang valid. Login dilakukan dari IP address yang terdaftar.',
+            data: JSON.stringify({
+                login_method: 'password',
+                remember_me: false,
+                two_factor: false
+            }, null, 2)
+        }
+    };
+    
+    const data = auditData[id] || auditData[1];
+    
+    document.getElementById('detailTime').textContent = data.time;
+    document.getElementById('detailUser').textContent = data.user;
+    document.getElementById('detailAction').textContent = data.action;
+    document.getElementById('detailStatus').textContent = data.status;
+    document.getElementById('detailIP').textContent = data.ip;
+    document.getElementById('detailBrowser').textContent = data.browser;
+    document.getElementById('detailOS').textContent = data.os;
+    document.getElementById('detailUserAgent').textContent = data.userAgent;
+    document.getElementById('detailSession').textContent = data.session;
+    document.getElementById('detailDescription').textContent = data.description;
+    document.getElementById('detailData').innerHTML = `<code>${data.data}</code>`;
+    
+    new bootstrap.Modal(document.getElementById('auditDetailModal')).show();
+}
+
+// Export functions
+function exportAuditLog() {
+    showNotification('Mengekspor audit log...', 'info');
+    
+    // Simulate export
+    setTimeout(() => {
+        showNotification('Audit log berhasil diekspor', 'success');
+    }, 2000);
+}
+
+function exportAuditDetail() {
+    showNotification('Mengekspor detail aktivitas...', 'info');
+    
+    // Simulate export
+    setTimeout(() => {
+        showNotification('Detail aktivitas berhasil diekspor', 'success');
+    }, 1000);
+}
+
+// Other functions
+function refreshLog() {
+    showNotification('Memuat ulang audit log...', 'info');
+    
+    // Simulate refresh
+    setTimeout(() => {
+        showNotification('Audit log berhasil dimuat ulang', 'success');
+    }, 1000);
+}
+
+function clearOldLogs() {
+    if (confirm('Apakah Anda yakin ingin menghapus log yang lebih dari 30 hari? Tindakan ini tidak dapat dibatalkan.')) {
+        showNotification('Menghapus log lama...', 'info');
+        
+        // Simulate deletion
+        setTimeout(() => {
+            showNotification('Log lama berhasil dihapus', 'success');
+        }, 2000);
+    }
+}
+</script>
+{% endblock %}

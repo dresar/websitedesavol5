@@ -1,0 +1,744 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manajemen Keuangan Lengkap - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Manajemen Keuangan Lengkap</h2>
+        <p class="text-muted">Kelola keuangan desa secara detail</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
+            <i class="bi bi-plus-circle"></i> Tambah Transaksi
+        </button>
+    </div>
+</div>
+
+<!-- Financial Summary Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card financial-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="financial-label">Total Penerimaan</div>
+                        <div class="financial-value text-success">Rp 2.5M</div>
+                        <div class="financial-change text-success">
+                            <i class="bi bi-arrow-up"></i> +12.5%
+                        </div>
+                    </div>
+                    <div class="financial-icon">
+                        <i class="bi bi-arrow-up-circle text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card financial-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="financial-label">Total Pengeluaran</div>
+                        <div class="financial-value text-danger">Rp 1.8M</div>
+                        <div class="financial-change text-danger">
+                            <i class="bi bi-arrow-down"></i> -5.2%
+                        </div>
+                    </div>
+                    <div class="financial-icon">
+                        <i class="bi bi-arrow-down-circle text-danger"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card financial-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="financial-label">Saldo Akhir</div>
+                        <div class="financial-value text-primary">Rp 700M</div>
+                        <div class="financial-change text-success">
+                            <i class="bi bi-arrow-up"></i> +8.3%
+                        </div>
+                    </div>
+                    <div class="financial-icon">
+                        <i class="bi bi-wallet2 text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card financial-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="financial-label">Anggaran Tersisa</div>
+                        <div class="financial-value text-warning">Rp 250M</div>
+                        <div class="financial-change text-warning">
+                            <i class="bi bi-exclamation-triangle"></i> 25%
+                        </div>
+                    </div>
+                    <div class="financial-icon">
+                        <i class="bi bi-pie-chart text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter and Search -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Cari transaksi..." id="searchTransaction">
+        </div>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterType">
+            <option value="">Semua Jenis</option>
+            <option value="penerimaan">Penerimaan</option>
+            <option value="pengeluaran">Pengeluaran</option>
+            <option value="transfer">Transfer</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterCategory">
+            <option value="">Semua Kategori</option>
+            <option value="dana_desa">Dana Desa</option>
+            <option value="bumdes">BUMDes</option>
+            <option value="pajak">Pajak</option>
+            <option value="retribusi">Retribusi</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <input type="date" class="form-control" id="filterDate">
+    </div>
+    <div class="col-md-3">
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="exportTransactions()">
+                <i class="bi bi-download"></i> Export
+            </button>
+            <button class="btn btn-outline-secondary" onclick="resetFilters()">
+                <i class="bi bi-arrow-clockwise"></i> Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Transactions List -->
+<div class="row" id="transactionsList">
+    <!-- Transaction Card 1 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up">
+        <div class="card transaction-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Dana Desa Bulan September</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-success">Penerimaan</span>
+                            <span class="badge bg-primary">Dana Desa</span>
+                            <span class="badge bg-success">Selesai</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewTransaction(1)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editTransaction(1)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateTransaction(1)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteTransaction(1)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Transfer dana desa dari Kecamatan Sukamaju
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-calendar text-primary"></i>
+                            <span>13 Sep 2024</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span>14:30</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-bank text-info"></i>
+                            <span>Bank BCA</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-file-text text-success"></i>
+                            <span>No: TXN-001</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="transaction-amount text-success fw-bold">+Rp 100.000.000</span>
+                    </div>
+                    <div class="transaction-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewTransaction(1)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editTransaction(1)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="downloadReceipt(1)">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Card 2 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="card transaction-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Pembayaran Kontraktor Jalan</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-danger">Pengeluaran</span>
+                            <span class="badge bg-warning">Infrastruktur</span>
+                            <span class="badge bg-success">Selesai</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewTransaction(2)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editTransaction(2)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateTransaction(2)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteTransaction(2)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Pembayaran tahap 2 pembangunan jalan desa
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-calendar text-primary"></i>
+                            <span>12 Sep 2024</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span>10:15</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-bank text-info"></i>
+                            <span>Bank Mandiri</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-file-text text-success"></i>
+                            <span>No: TXN-002</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="transaction-amount text-danger fw-bold">-Rp 50.000.000</span>
+                    </div>
+                    <div class="transaction-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewTransaction(2)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editTransaction(2)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="downloadReceipt(2)">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Card 3 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="card transaction-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Pendapatan BUMDes</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-success">Penerimaan</span>
+                            <span class="badge bg-info">BUMDes</span>
+                            <span class="badge bg-warning">Pending</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewTransaction(3)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editTransaction(3)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateTransaction(3)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteTransaction(3)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Penjualan hasil tani dari BUMDes
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-calendar text-primary"></i>
+                            <span>11 Sep 2024</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span>16:45</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-bank text-info"></i>
+                            <span>Kas Tunai</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-file-text text-success"></i>
+                            <span>No: TXN-003</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="transaction-amount text-success fw-bold">+Rp 25.000.000</span>
+                    </div>
+                    <div class="transaction-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewTransaction(3)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editTransaction(3)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="downloadReceipt(3)">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Card 4 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="card transaction-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Pembelian Alat Tulis Kantor</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-danger">Pengeluaran</span>
+                            <span class="badge bg-secondary">Operasional</span>
+                            <span class="badge bg-success">Selesai</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewTransaction(4)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editTransaction(4)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateTransaction(4)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteTransaction(4)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Pembelian alat tulis kantor untuk keperluan administrasi
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-calendar text-primary"></i>
+                            <span>10 Sep 2024</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span>09:30</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-bank text-info"></i>
+                            <span>Kas Tunai</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="transaction-info">
+                            <i class="bi bi-file-text text-success"></i>
+                            <span>No: TXN-004</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="transaction-amount text-danger fw-bold">-Rp 2.500.000</span>
+                    </div>
+                    <div class="transaction-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewTransaction(4)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editTransaction(4)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="downloadReceipt(4)">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Transaction Modal -->
+<div class="modal fade" id="addTransactionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Transaksi Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addTransactionForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis Transaksi</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Jenis</option>
+                                <option value="penerimaan">Penerimaan</option>
+                                <option value="pengeluaran">Pengeluaran</option>
+                                <option value="transfer">Transfer</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Kategori</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Kategori</option>
+                                <option value="dana_desa">Dana Desa</option>
+                                <option value="bumdes">BUMDes</option>
+                                <option value="pajak">Pajak</option>
+                                <option value="retribusi">Retribusi</option>
+                                <option value="infrastruktur">Infrastruktur</option>
+                                <option value="operasional">Operasional</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Deskripsi</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jumlah</label>
+                            <input type="number" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Metode Pembayaran</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Metode</option>
+                                <option value="kas_tunai">Kas Tunai</option>
+                                <option value="bank_bca">Bank BCA</option>
+                                <option value="bank_mandiri">Bank Mandiri</option>
+                                <option value="bank_bri">Bank BRI</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nomor Referensi</label>
+                            <input type="text" class="form-control" placeholder="TXN-XXX">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Dokumen Pendukung</label>
+                        <input type="file" class="form-control" accept=".pdf,.jpg,.png" multiple>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary btn-submit">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.financial-card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.financial-card:hover {
+    transform: translateY(-2px);
+}
+
+.financial-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.financial-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.financial-change {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.financial-icon {
+    font-size: 2rem;
+}
+
+.transaction-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.transaction-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.transaction-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.transaction-info i {
+    margin-right: 8px;
+    width: 16px;
+}
+
+.transaction-amount {
+    font-size: 1.25rem;
+}
+
+.transaction-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Search and filter functionality
+document.getElementById('searchTransaction').addEventListener('input', filterTransactions);
+document.getElementById('filterType').addEventListener('change', filterTransactions);
+document.getElementById('filterCategory').addEventListener('change', filterTransactions);
+document.getElementById('filterDate').addEventListener('change', filterTransactions);
+
+function filterTransactions() {
+    const searchTerm = document.getElementById('searchTransaction').value.toLowerCase();
+    const typeFilter = document.getElementById('filterType').value;
+    const categoryFilter = document.getElementById('filterCategory').value;
+    const dateFilter = document.getElementById('filterDate').value;
+    
+    const cards = document.querySelectorAll('.transaction-card');
+    
+    cards.forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const description = card.querySelector('.card-text').textContent.toLowerCase();
+        const type = card.querySelector('.badge.bg-success, .badge.bg-danger').textContent.toLowerCase();
+        const category = card.querySelector('.badge.bg-primary, .badge.bg-warning, .badge.bg-info, .badge.bg-secondary').textContent.toLowerCase();
+        const date = card.querySelector('.transaction-info span').textContent;
+        
+        const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+        const matchesType = !typeFilter || type.includes(typeFilter);
+        const matchesCategory = !categoryFilter || category.includes(categoryFilter);
+        const matchesDate = !dateFilter || date.includes(dateFilter);
+        
+        if (matchesSearch && matchesType && matchesCategory && matchesDate) {
+            card.closest('.col-xl-6').style.display = 'block';
+        } else {
+            card.closest('.col-xl-6').style.display = 'none';
+        }
+    });
+}
+
+function resetFilters() {
+    document.getElementById('searchTransaction').value = '';
+    document.getElementById('filterType').value = '';
+    document.getElementById('filterCategory').value = '';
+    document.getElementById('filterDate').value = '';
+    filterTransactions();
+}
+
+// CRUD operations
+function viewTransaction(id) {
+    showNotification('Membuka detail transaksi...', 'info');
+    
+    // Simulate opening transaction detail
+    setTimeout(() => {
+        showNotification('Detail transaksi berhasil dibuka', 'success');
+    }, 1000);
+}
+
+function editTransaction(id) {
+    showNotification('Membuka editor transaksi...', 'info');
+    
+    // Simulate opening editor
+    setTimeout(() => {
+        showNotification('Editor transaksi berhasil dibuka', 'success');
+    }, 1000);
+}
+
+function duplicateTransaction(id) {
+    showNotification('Menduplikasi transaksi...', 'info');
+    
+    // Simulate duplication
+    setTimeout(() => {
+        showNotification('Transaksi berhasil diduplikasi', 'success');
+    }, 1000);
+}
+
+function deleteTransaction(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
+        showNotification('Menghapus transaksi...', 'info');
+        
+        // Simulate deletion
+        setTimeout(() => {
+            showNotification('Transaksi berhasil dihapus', 'success');
+            event.target.closest('.col-xl-6').remove();
+        }, 1000);
+    }
+}
+
+function downloadReceipt(id) {
+    showNotification('Mengunduh bukti transaksi...', 'info');
+    
+    // Simulate download
+    setTimeout(() => {
+        showNotification('Bukti transaksi berhasil diunduh', 'success');
+    }, 2000);
+}
+
+function exportTransactions() {
+    showNotification('Mengekspor transaksi...', 'info');
+    
+    // Simulate export
+    setTimeout(() => {
+        showNotification('Transaksi berhasil diekspor', 'success');
+    }, 3000);
+}
+
+// Form submission
+document.querySelector('#addTransactionModal .btn-submit').addEventListener('click', function() {
+    const form = document.getElementById('addTransactionForm');
+    if (form.checkValidity()) {
+        showNotification('Menyimpan transaksi...', 'info');
+        bootstrap.Modal.getInstance(document.getElementById('addTransactionModal')).hide();
+        form.reset();
+        
+        // Simulate save
+        setTimeout(() => {
+            showNotification('Transaksi berhasil disimpan', 'success');
+        }, 2000);
+    } else {
+        form.reportValidity();
+    }
+});
+</script>
+{% endblock %}

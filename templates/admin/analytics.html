@@ -1,0 +1,756 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Analytics - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Analytics</h2>
+        <p class="text-muted">Analisis data dan insights mendalam</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" onclick="refreshAnalytics()">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+    </div>
+</div>
+
+<!-- Key Metrics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card analytics-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="analytics-label">Total Pengguna Aktif</div>
+                        <div class="analytics-value">1,247</div>
+                        <div class="analytics-change text-success">
+                            <i class="bi bi-arrow-up"></i> +15.3%
+                        </div>
+                    </div>
+                    <div class="analytics-icon">
+                        <i class="bi bi-people text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card analytics-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="analytics-label">Sesi Hari Ini</div>
+                        <div class="analytics-value">89</div>
+                        <div class="analytics-change text-success">
+                            <i class="bi bi-arrow-up"></i> +8.2%
+                        </div>
+                    </div>
+                    <div class="analytics-icon">
+                        <i class="bi bi-graph-up text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card analytics-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="analytics-label">Waktu Rata-rata</div>
+                        <div class="analytics-value">4m 32s</div>
+                        <div class="analytics-change text-warning">
+                            <i class="bi bi-arrow-down"></i> -2.1%
+                        </div>
+                    </div>
+                    <div class="analytics-icon">
+                        <i class="bi bi-clock text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card analytics-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="analytics-label">Tingkat Kepuasan</div>
+                        <div class="analytics-value">4.7/5</div>
+                        <div class="analytics-change text-success">
+                            <i class="bi bi-arrow-up"></i> +0.3
+                        </div>
+                    </div>
+                    <div class="analytics-icon">
+                        <i class="bi bi-star text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter and Time Range -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Rentang Waktu</label>
+        <select class="form-select" id="timeRange">
+            <option value="7d">7 Hari Terakhir</option>
+            <option value="30d" selected>30 Hari Terakhir</option>
+            <option value="90d">90 Hari Terakhir</option>
+            <option value="1y">1 Tahun Terakhir</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Kategori Data</label>
+        <select class="form-select" id="dataCategory">
+            <option value="all">Semua Data</option>
+            <option value="penduduk">Penduduk</option>
+            <option value="keuangan">Keuangan</option>
+            <option value="kegiatan">Kegiatan</option>
+            <option value="surat">Surat</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Metrik</label>
+        <select class="form-select" id="metricType">
+            <option value="views">Tampilan</option>
+            <option value="users">Pengguna</option>
+            <option value="sessions">Sesi</option>
+            <option value="conversions">Konversi</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Perbandingan</label>
+        <select class="form-select" id="comparisonType">
+            <option value="none">Tidak Ada</option>
+            <option value="previous">Periode Sebelumnya</option>
+            <option value="year">Tahun Sebelumnya</option>
+        </select>
+    </div>
+</div>
+
+<!-- Main Analytics Charts -->
+<div class="row mb-4">
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-graph-up"></i> Tren Penggunaan
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="usageTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-pie-chart"></i> Distribusi Fitur
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="featureDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Behavior Analysis -->
+<div class="row mb-4">
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-people"></i> Demografi Pengguna
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="userDemographicsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock"></i> Waktu Akses
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="accessTimeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Metrics -->
+<div class="row mb-4">
+    <div class="col-xl-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-speedometer2"></i> Performa Sistem
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="performance-metrics">
+                    <div class="metric-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Response Time</span>
+                            <span class="fw-bold text-success">245ms</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 6px;">
+                            <div class="progress-bar bg-success" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Uptime</span>
+                            <span class="fw-bold text-success">99.9%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 6px;">
+                            <div class="progress-bar bg-success" style="width: 99%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Error Rate</span>
+                            <span class="fw-bold text-warning">0.1%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 6px;">
+                            <div class="progress-bar bg-warning" style="width: 10%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>CPU Usage</span>
+                            <span class="fw-bold text-info">65%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 6px;">
+                            <div class="progress-bar bg-info" style="width: 65%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-bar-chart"></i> Top Pages & Features
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Halaman/Fitur</th>
+                                <th>Pengunjung</th>
+                                <th>% dari Total</th>
+                                <th>Waktu Rata-rata</th>
+                                <th>Bounce Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-house me-2 text-primary"></i>
+                                        Dashboard
+                                    </div>
+                                </td>
+                                <td class="fw-bold">1,247</td>
+                                <td class="text-end">35.2%</td>
+                                <td class="text-end">2m 15s</td>
+                                <td class="text-end">
+                                    <span class="badge bg-success">12%</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-people me-2 text-success"></i>
+                                        Manajemen Penduduk
+                                    </div>
+                                </td>
+                                <td class="fw-bold">856</td>
+                                <td class="text-end">24.1%</td>
+                                <td class="text-end">3m 45s</td>
+                                <td class="text-end">
+                                    <span class="badge bg-success">8%</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-cash-stack me-2 text-warning"></i>
+                                        Manajemen Keuangan
+                                    </div>
+                                </td>
+                                <td class="fw-bold">642</td>
+                                <td class="text-end">18.1%</td>
+                                <td class="text-end">4m 20s</td>
+                                <td class="text-end">
+                                    <span class="badge bg-warning">15%</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-envelope me-2 text-info"></i>
+                                        Manajemen Surat
+                                    </div>
+                                </td>
+                                <td class="fw-bold">423</td>
+                                <td class="text-end">11.9%</td>
+                                <td class="text-end">2m 30s</td>
+                                <td class="text-end">
+                                    <span class="badge bg-success">10%</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-calendar-event me-2 text-danger"></i>
+                                        Manajemen Kegiatan
+                                    </div>
+                                </td>
+                                <td class="fw-bold">378</td>
+                                <td class="text-end">10.7%</td>
+                                <td class="text-end">1m 45s</td>
+                                <td class="text-end">
+                                    <span class="badge bg-success">5%</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Insights and Recommendations -->
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-lightbulb"></i> Insights & Rekomendasi
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="insights-list">
+                    <div class="insight-item">
+                        <div class="insight-icon bg-success">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h6 class="mb-1">Performa Sistem Baik</h6>
+                            <p class="mb-0 text-muted">Response time rata-rata 245ms menunjukkan performa yang optimal</p>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-item">
+                        <div class="insight-icon bg-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h6 class="mb-1">Tingkat Bounce Rate Tinggi</h6>
+                            <p class="mb-0 text-muted">Halaman Manajemen Keuangan memiliki bounce rate 15%, pertimbangkan untuk meningkatkan UX</p>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-item">
+                        <div class="insight-icon bg-info">
+                            <i class="bi bi-info-circle"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h6 class="mb-1">Puncak Penggunaan</h6>
+                            <p class="mb-0 text-muted">Sistem paling aktif pada jam 09:00-11:00 dan 14:00-16:00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-item">
+                        <div class="insight-icon bg-primary">
+                            <i class="bi bi-arrow-up"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h6 class="mb-1">Pertumbuhan Positif</h6>
+                            <p class="mb-0 text-muted">Pengguna aktif meningkat 15.3% dibanding periode sebelumnya</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-geo-alt"></i> Analisis Geografis
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="geographic-analysis">
+                    <div class="location-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>RT 01</span>
+                            <span class="fw-bold">35%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-primary" style="width: 35%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="location-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>RT 02</span>
+                            <span class="fw-bold">28%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: 28%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="location-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>RT 03</span>
+                            <span class="fw-bold">22%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-warning" style="width: 22%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="location-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>RT 04</span>
+                            <span class="fw-bold">15%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-info" style="width: 15%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.analytics-card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.analytics-card:hover {
+    transform: translateY(-2px);
+}
+
+.analytics-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.analytics-value {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.analytics-change {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.analytics-icon {
+    font-size: 2.5rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.performance-metrics .metric-item {
+    margin-bottom: 1rem;
+}
+
+.performance-metrics .metric-item:last-child {
+    margin-bottom: 0;
+}
+
+.insights-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.insight-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.insight-item:last-child {
+    border-bottom: none;
+}
+
+.insight-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+    color: white;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.insight-content {
+    flex: 1;
+}
+
+.geographic-analysis .location-item {
+    margin-bottom: 1rem;
+}
+
+.geographic-analysis .location-item:last-child {
+    margin-bottom: 0;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.progress {
+    height: 8px;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize charts
+document.addEventListener('DOMContentLoaded', function() {
+    // Usage Trend Chart
+    const trendCtx = document.getElementById('usageTrendChart').getContext('2d');
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: ['1 Sep', '5 Sep', '9 Sep', '13 Sep', '17 Sep', '21 Sep', '25 Sep', '29 Sep'],
+            datasets: [{
+                label: 'Pengguna Aktif',
+                data: [120, 135, 142, 158, 165, 172, 189, 201],
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Sesi',
+                data: [89, 95, 102, 115, 123, 135, 148, 156],
+                borderColor: '#2ecc71',
+                backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            }
+        }
+    });
+
+    // Feature Distribution Chart
+    const featureCtx = document.getElementById('featureDistributionChart').getContext('2d');
+    new Chart(featureCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Dashboard', 'Penduduk', 'Keuangan', 'Surat', 'Kegiatan'],
+            datasets: [{
+                data: [35.2, 24.1, 18.1, 11.9, 10.7],
+                backgroundColor: [
+                    '#3498db',
+                    '#2ecc71',
+                    '#f39c12',
+                    '#e74c3c',
+                    '#9b59b6'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+
+    // User Demographics Chart
+    const demoCtx = document.getElementById('userDemographicsChart').getContext('2d');
+    new Chart(demoCtx, {
+        type: 'bar',
+        data: {
+            labels: ['18-25', '26-35', '36-45', '46-55', '56-65', '65+'],
+            datasets: [{
+                label: 'Jumlah Pengguna',
+                data: [45, 78, 95, 67, 34, 12],
+                backgroundColor: 'rgba(52, 152, 219, 0.8)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            }
+        }
+    });
+
+    // Access Time Chart
+    const timeCtx = document.getElementById('accessTimeChart').getContext('2d');
+    new Chart(timeCtx, {
+        type: 'line',
+        data: {
+            labels: ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
+            datasets: [{
+                label: 'Aktivitas',
+                data: [2, 1, 0, 3, 8, 25, 35, 42, 38, 28, 15, 8],
+                borderColor: '#e74c3c',
+                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            }
+        }
+    });
+});
+
+// Refresh analytics
+function refreshAnalytics() {
+    showNotification('Memuat ulang data analytics...', 'info');
+    
+    // Simulate refresh
+    setTimeout(() => {
+        showNotification('Data analytics berhasil dimuat ulang', 'success');
+    }, 2000);
+}
+
+// Filter change handlers
+document.getElementById('timeRange').addEventListener('change', function() {
+    showNotification('Memperbarui data berdasarkan rentang waktu...', 'info');
+});
+
+document.getElementById('dataCategory').addEventListener('change', function() {
+    showNotification('Memperbarui data berdasarkan kategori...', 'info');
+});
+
+document.getElementById('metricType').addEventListener('change', function() {
+    showNotification('Memperbarui data berdasarkan metrik...', 'info');
+});
+
+document.getElementById('comparisonType').addEventListener('change', function() {
+    showNotification('Memperbarui data perbandingan...', 'info');
+});
+
+// Auto-refresh every 5 minutes
+setInterval(() => {
+    // In a real application, this would fetch new analytics data
+    console.log('Auto-refreshing analytics data...');
+}, 300000);
+</script>
+{% endblock %}

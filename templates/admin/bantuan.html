@@ -1,0 +1,528 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bantuan & FAQ - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Bantuan & FAQ</h2>
+        <p class="text-muted">Panduan penggunaan dan pertanyaan yang sering diajukan</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactSupportModal">
+            <i class="bi bi-headset"></i> Hubungi Support
+        </button>
+    </div>
+</div>
+
+<!-- Search Help -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Cari bantuan atau FAQ..." id="searchHelp">
+        </div>
+    </div>
+    <div class="col-md-4">
+        <select class="form-select" id="filterCategory">
+            <option value="">Semua Kategori</option>
+            <option value="umum">Umum</option>
+            <option value="penduduk">Penduduk</option>
+            <option value="keuangan">Keuangan</option>
+            <option value="surat">Surat</option>
+            <option value="kegiatan">Kegiatan</option>
+            <option value="sistem">Sistem</option>
+        </select>
+    </div>
+</div>
+
+<!-- Quick Help Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card help-card" onclick="showHelpSection('getting-started')">
+            <div class="card-body text-center">
+                <div class="help-icon">
+                    <i class="bi bi-play-circle"></i>
+                </div>
+                <h5 class="card-title">Memulai</h5>
+                <p class="card-text text-muted">Panduan dasar penggunaan sistem</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card help-card" onclick="showHelpSection('tutorials')">
+            <div class="card-body text-center">
+                <div class="help-icon">
+                    <i class="bi bi-book"></i>
+                </div>
+                <h5 class="card-title">Tutorial</h5>
+                <p class="card-text text-muted">Tutorial step-by-step</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card help-card" onclick="showHelpSection('troubleshooting')">
+            <div class="card-body text-center">
+                <div class="help-icon">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <h5 class="card-title">Troubleshooting</h5>
+                <p class="card-text text-muted">Mengatasi masalah umum</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card help-card" onclick="showHelpSection('contact')">
+            <div class="card-body text-center">
+                <div class="help-icon">
+                    <i class="bi bi-headset"></i>
+                </div>
+                <h5 class="card-title">Kontak</h5>
+                <p class="card-text text-muted">Hubungi tim support</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FAQ Section -->
+<div class="row">
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-question-circle"></i> Pertanyaan yang Sering Diajukan (FAQ)
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="faqAccordion">
+                    <!-- FAQ Item 1 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                Bagaimana cara menambah data penduduk baru?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Untuk menambah data penduduk baru:</p>
+                                <ol>
+                                    <li>Buka menu <strong>Manajemen Penduduk</strong></li>
+                                    <li>Klik tombol <strong>Tambah Penduduk</strong></li>
+                                    <li>Isi form dengan data lengkap penduduk</li>
+                                    <li>Klik <strong>Simpan</strong> untuk menyimpan data</li>
+                                </ol>
+                                <div class="alert alert-info mt-3">
+                                    <i class="bi bi-info-circle"></i>
+                                    Pastikan semua field yang wajib diisi sudah terisi dengan benar.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 2 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                Bagaimana cara generate laporan keuangan?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Untuk generate laporan keuangan:</p>
+                                <ol>
+                                    <li>Buka menu <strong>Manajemen Laporan</strong></li>
+                                    <li>Klik tombol <strong>Generate Laporan</strong></li>
+                                    <li>Pilih jenis laporan <strong>Keuangan</strong></li>
+                                    <li>Tentukan periode laporan</li>
+                                    <li>Pilih format output (PDF/Excel/Word)</li>
+                                    <li>Klik <strong>Generate Laporan</strong></li>
+                                </ol>
+                                <p class="text-muted mt-3">
+                                    <i class="bi bi-clock"></i> Proses generate membutuhkan waktu 1-3 menit tergantung jumlah data.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 3 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Bagaimana cara mengubah tema aplikasi?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Untuk mengubah tema aplikasi:</p>
+                                <ol>
+                                    <li>Buka menu <strong>Pengaturan Sistem</strong></li>
+                                    <li>Pilih tab <strong>Tampilan</strong></li>
+                                    <li>Pilih tema yang diinginkan:
+                                        <ul>
+                                            <li><strong>Terang:</strong> Tema dengan background putih</li>
+                                            <li><strong>Gelap:</strong> Tema dengan background gelap</li>
+                                            <li><strong>Otomatis:</strong> Mengikuti pengaturan sistem</li>
+                                        </ul>
+                                    </li>
+                                    <li>Klik <strong>Simpan Semua</strong></li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 4 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                Bagaimana cara backup data?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Untuk backup data:</p>
+                                <ol>
+                                    <li>Buka menu <strong>Pengaturan Sistem</strong></li>
+                                    <li>Pilih tab <strong>Backup</strong></li>
+                                    <li>Konfigurasi pengaturan backup:
+                                        <ul>
+                                            <li>Frekuensi backup (harian/mingguan/bulanan)</li>
+                                            <li>Waktu backup</li>
+                                            <li>Lokasi backup (lokal/cloud)</li>
+                                        </ul>
+                                    </li>
+                                    <li>Klik <strong>Buat Backup Sekarang</strong> untuk backup manual</li>
+                                </ol>
+                                <div class="alert alert-warning mt-3">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    Pastikan backup dilakukan secara berkala untuk menjaga keamanan data.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 5 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                Bagaimana cara mengatur notifikasi?
+                            </button>
+                        </h2>
+                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Untuk mengatur notifikasi:</p>
+                                <ol>
+                                    <li>Buka menu <strong>Pengaturan Sistem</strong></li>
+                                    <li>Pilih tab <strong>Notifikasi</strong></li>
+                                    <li>Pilih jenis notifikasi yang ingin diaktifkan:
+                                        <ul>
+                                            <li>Notifikasi Email</li>
+                                            <li>Notifikasi Push</li>
+                                        </ul>
+                                    </li>
+                                    <li>Konfigurasi SMTP untuk email</li>
+                                    <li>Pilih jenis notifikasi yang ingin diterima</li>
+                                    <li>Set frekuensi notifikasi</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Help Sidebar -->
+    <div class="col-xl-4">
+        <!-- Quick Links -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-link-45deg"></i> Tautan Cepat
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="bi bi-download"></i> Download Manual Pengguna
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="bi bi-video"></i> Video Tutorial
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="bi bi-file-earmark-text"></i> Dokumentasi API
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="bi bi-github"></i> Repository GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- System Status -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-activity"></i> Status Sistem
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Server</span>
+                    <span class="badge bg-success">Online</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Database</span>
+                    <span class="badge bg-success">Connected</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Backup</span>
+                    <span class="badge bg-warning">Pending</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Update</span>
+                    <span class="badge bg-info">Available</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Info -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-telephone"></i> Kontak Support
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="contact-info">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-envelope me-3"></i>
+                        <div>
+                            <strong>Email</strong><br>
+                            <small>support@sukamaju.id</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-telephone me-3"></i>
+                        <div>
+                            <strong>Telepon</strong><br>
+                            <small>(021) 1234-5678</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-whatsapp me-3"></i>
+                        <div>
+                            <strong>WhatsApp</strong><br>
+                            <small>+62 812-3456-7890</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-clock me-3"></i>
+                        <div>
+                            <strong>Jam Kerja</strong><br>
+                            <small>Senin - Jumat: 08:00 - 17:00</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Support Modal -->
+<div class="modal fade" id="contactSupportModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Hubungi Support</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="contactSupportForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nama</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis Masalah</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Jenis Masalah</option>
+                                <option value="bug">Bug/Error</option>
+                                <option value="feature">Permintaan Fitur</option>
+                                <option value="howto">Cara Penggunaan</option>
+                                <option value="other">Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Prioritas</label>
+                            <select class="form-select" required>
+                                <option value="low">Rendah</option>
+                                <option value="medium" selected>Sedang</option>
+                                <option value="high">Tinggi</option>
+                                <option value="urgent">Mendesak</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Subjek</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Deskripsi Masalah</label>
+                        <textarea class="form-control" rows="5" required placeholder="Jelaskan masalah yang Anda alami secara detail..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Screenshot (opsional)</label>
+                        <input type="file" class="form-control" accept="image/*" multiple>
+                        <small class="text-muted">Upload screenshot untuk membantu tim support memahami masalah</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary btn-submit">Kirim Pesan</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.help-card {
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.help-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.help-icon {
+    font-size: 48px;
+    color: #3498db;
+    margin-bottom: 16px;
+}
+
+.contact-info .d-flex {
+    padding: 8px 0;
+}
+
+.contact-info i {
+    font-size: 18px;
+    color: #6c757d;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+}
+
+.list-group-item-action:hover {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Search functionality
+document.getElementById('searchHelp').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const accordionItems = document.querySelectorAll('.accordion-item');
+    
+    accordionItems.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+});
+
+// Filter by category
+document.getElementById('filterCategory').addEventListener('change', function() {
+    const category = this.value;
+    const accordionItems = document.querySelectorAll('.accordion-item');
+    
+    if (category === '') {
+        accordionItems.forEach(item => {
+            item.style.display = 'block';
+        });
+    } else {
+        // This is a demo - in real implementation, you would filter based on actual categories
+        accordionItems.forEach(item => {
+            item.style.display = 'block';
+        });
+    }
+});
+
+// Help section navigation
+function showHelpSection(section) {
+    const sections = {
+        'getting-started': 'Memulai',
+        'tutorials': 'Tutorial',
+        'troubleshooting': 'Troubleshooting',
+        'contact': 'Kontak'
+    };
+    
+    showNotification(`Membuka bagian: ${sections[section]}`, 'info');
+    
+    // Scroll to FAQ section
+    document.getElementById('faqAccordion').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Contact support form
+document.querySelector('#contactSupportModal .btn-submit').addEventListener('click', function() {
+    const form = document.getElementById('contactSupportForm');
+    if (form.checkValidity()) {
+        showNotification('Pesan support berhasil dikirim', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('contactSupportModal')).hide();
+        form.reset();
+    } else {
+        form.reportValidity();
+    }
+});
+
+// Auto-expand FAQ based on search
+document.getElementById('searchHelp').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    if (searchTerm.length > 2) {
+        const accordionButtons = document.querySelectorAll('.accordion-button');
+        accordionButtons.forEach(button => {
+            if (button.textContent.toLowerCase().includes(searchTerm)) {
+                const collapse = document.querySelector(button.getAttribute('data-bs-target'));
+                if (collapse && !collapse.classList.contains('show')) {
+                    new bootstrap.Collapse(collapse, { show: true });
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

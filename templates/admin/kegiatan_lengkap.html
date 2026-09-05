@@ -1,0 +1,757 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manajemen Kegiatan Lengkap - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Manajemen Kegiatan Lengkap</h2>
+        <p class="text-muted">Kelola kegiatan dan acara desa secara detail</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addKegiatanModal">
+            <i class="bi bi-plus-circle"></i> Tambah Kegiatan
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">15</div>
+                    <div class="stats-label">Total Kegiatan</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-calendar-event"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">8</div>
+                    <div class="stats-label">Sedang Berlangsung</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-play-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">5</div>
+                    <div class="stats-label">Selesai</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">2</div>
+                    <div class="stats-label">Dijadwalkan</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-clock"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter and Search -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Cari kegiatan..." id="searchKegiatan">
+        </div>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterStatus">
+            <option value="">Semua Status</option>
+            <option value="berlangsung">Sedang Berlangsung</option>
+            <option value="selesai">Selesai</option>
+            <option value="dijadwalkan">Dijadwalkan</option>
+            <option value="dibatalkan">Dibatalkan</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterKategori">
+            <option value="">Semua Kategori</option>
+            <option value="gotong-royong">Gotong Royong</option>
+            <option value="pemerintahan">Pemerintahan</option>
+            <option value="sosial">Sosial</option>
+            <option value="budaya">Budaya</option>
+            <option value="olahraga">Olahraga</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <input type="date" class="form-control" id="filterDate">
+    </div>
+    <div class="col-md-3">
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="exportKegiatan()">
+                <i class="bi bi-download"></i> Export
+            </button>
+            <button class="btn btn-outline-secondary" onclick="resetFilters()">
+                <i class="bi bi-arrow-clockwise"></i> Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Activities List -->
+<div class="row" id="kegiatanList">
+    <!-- Activity Card 1 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up">
+        <div class="card activity-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Gotong Royong Bersih Desa</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-success">Sedang Berlangsung</span>
+                            <span class="badge bg-primary">Gotong Royong</span>
+                            <span class="badge bg-warning">Tinggi</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewKegiatan(1)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editKegiatan(1)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateKegiatan(1)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteKegiatan(1)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Kegiatan gotong royong untuk membersihkan lingkungan desa dan memperbaiki infrastruktur umum
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-calendar-date text-primary"></i>
+                            <span>15 Sep 2024</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span>08:00 - 12:00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-geo-alt text-success"></i>
+                            <span>Lapangan Desa</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-people text-info"></i>
+                            <span>45 Peserta</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="progress" style="width: 100px; height: 6px;">
+                            <div class="progress-bar bg-success" style="width: 75%"></div>
+                        </div>
+                        <small class="text-muted">75% Selesai</small>
+                    </div>
+                    <div class="activity-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewKegiatan(1)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editKegiatan(1)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="completeKegiatan(1)">
+                            <i class="bi bi-check-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Card 2 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="card activity-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Rapat Koordinasi RT/RW</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-primary">Selesai</span>
+                            <span class="badge bg-info">Pemerintahan</span>
+                            <span class="badge bg-success">Sedang</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewKegiatan(2)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editKegiatan(2)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateKegiatan(2)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteKegiatan(2)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Rapat koordinasi bulanan untuk membahas program kerja dan evaluasi kegiatan desa
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-calendar-date text-primary"></i>
+                            <span>10 Sep 2024</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span>19:00 - 21:00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-geo-alt text-success"></i>
+                            <span>Balai Desa</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-people text-info"></i>
+                            <span>25 Peserta</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="progress" style="width: 100px; height: 6px;">
+                            <div class="progress-bar bg-primary" style="width: 100%"></div>
+                        </div>
+                        <small class="text-muted">100% Selesai</small>
+                    </div>
+                    <div class="activity-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewKegiatan(2)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editKegiatan(2)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="downloadReport(2)">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Card 3 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="card activity-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Festival Budaya Desa</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-warning">Dijadwalkan</span>
+                            <span class="badge bg-danger">Budaya</span>
+                            <span class="badge bg-info">Sedang</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewKegiatan(3)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editKegiatan(3)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateKegiatan(3)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteKegiatan(3)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Festival budaya untuk melestarikan dan mempromosikan kesenian tradisional desa
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-calendar-date text-primary"></i>
+                            <span>25 Sep 2024</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span>14:00 - 22:00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-geo-alt text-success"></i>
+                            <span>Lapangan Desa</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-people text-info"></i>
+                            <span>200 Peserta</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="progress" style="width: 100px; height: 6px;">
+                            <div class="progress-bar bg-warning" style="width: 30%"></div>
+                        </div>
+                        <small class="text-muted">30% Persiapan</small>
+                    </div>
+                    <div class="activity-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewKegiatan(3)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editKegiatan(3)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="startKegiatan(3)">
+                            <i class="bi bi-play-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Card 4 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="card activity-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Turnamen Sepak Bola</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-success">Sedang Berlangsung</span>
+                            <span class="badge bg-warning">Olahraga</span>
+                            <span class="badge bg-info">Sedang</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewKegiatan(4)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editKegiatan(4)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateKegiatan(4)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteKegiatan(4)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Turnamen sepak bola antar RT untuk mempererat silaturahmi warga desa
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-calendar-date text-primary"></i>
+                            <span>20 Sep 2024</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span>16:00 - 18:00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-geo-alt text-success"></i>
+                            <span>Lapangan Sepak Bola</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="activity-info">
+                            <i class="bi bi-people text-info"></i>
+                            <span>80 Peserta</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="progress" style="width: 100px; height: 6px;">
+                            <div class="progress-bar bg-success" style="width: 60%"></div>
+                        </div>
+                        <small class="text-muted">60% Berlangsung</small>
+                    </div>
+                    <div class="activity-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewKegiatan(4)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editKegiatan(4)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="completeKegiatan(4)">
+                            <i class="bi bi-check-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Activity Modal -->
+<div class="modal fade" id="addKegiatanModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Kegiatan Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addKegiatanForm">
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">Nama Kegiatan</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Kategori</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Kategori</option>
+                                <option value="gotong-royong">Gotong Royong</option>
+                                <option value="pemerintahan">Pemerintahan</option>
+                                <option value="sosial">Sosial</option>
+                                <option value="budaya">Budaya</option>
+                                <option value="olahraga">Olahraga</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Deskripsi</label>
+                        <textarea class="form-control" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Waktu Mulai</label>
+                            <input type="time" class="form-control" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Waktu Selesai</label>
+                            <input type="time" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">Lokasi</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Estimasi Peserta</label>
+                            <input type="number" class="form-control" min="1">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" required>
+                                <option value="dijadwalkan">Dijadwalkan</option>
+                                <option value="berlangsung">Sedang Berlangsung</option>
+                                <option value="selesai">Selesai</option>
+                                <option value="dibatalkan">Dibatalkan</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Prioritas</label>
+                            <select class="form-select" required>
+                                <option value="rendah">Rendah</option>
+                                <option value="sedang" selected>Sedang</option>
+                                <option value="tinggi">Tinggi</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Foto Kegiatan</label>
+                        <input type="file" class="form-control" accept="image/*" multiple>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary btn-submit">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.activity-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.activity-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.activity-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.activity-info i {
+    margin-right: 8px;
+    width: 16px;
+}
+
+.activity-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.progress {
+    height: 6px;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Search and filter functionality
+document.getElementById('searchKegiatan').addEventListener('input', filterKegiatan);
+document.getElementById('filterStatus').addEventListener('change', filterKegiatan);
+document.getElementById('filterKategori').addEventListener('change', filterKegiatan);
+document.getElementById('filterDate').addEventListener('change', filterKegiatan);
+
+function filterKegiatan() {
+    const searchTerm = document.getElementById('searchKegiatan').value.toLowerCase();
+    const statusFilter = document.getElementById('filterStatus').value;
+    const kategoriFilter = document.getElementById('filterKategori').value;
+    const dateFilter = document.getElementById('filterDate').value;
+    
+    const cards = document.querySelectorAll('.activity-card');
+    
+    cards.forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const description = card.querySelector('.card-text').textContent.toLowerCase();
+        const status = card.querySelector('.badge.bg-success, .badge.bg-primary, .badge.bg-warning').textContent.toLowerCase();
+        const kategori = card.querySelector('.badge.bg-primary, .badge.bg-info, .badge.bg-danger, .badge.bg-warning').textContent.toLowerCase();
+        const date = card.querySelector('.activity-info span').textContent;
+        
+        const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+        const matchesStatus = !statusFilter || status.includes(statusFilter);
+        const matchesKategori = !kategoriFilter || kategori.includes(kategoriFilter);
+        const matchesDate = !dateFilter || date.includes(dateFilter);
+        
+        if (matchesSearch && matchesStatus && matchesKategori && matchesDate) {
+            card.closest('.col-xl-6').style.display = 'block';
+        } else {
+            card.closest('.col-xl-6').style.display = 'none';
+        }
+    });
+}
+
+function resetFilters() {
+    document.getElementById('searchKegiatan').value = '';
+    document.getElementById('filterStatus').value = '';
+    document.getElementById('filterKategori').value = '';
+    document.getElementById('filterDate').value = '';
+    filterKegiatan();
+}
+
+// CRUD operations
+function viewKegiatan(id) {
+    showNotification('Membuka detail kegiatan...', 'info');
+    
+    // Simulate opening kegiatan detail
+    setTimeout(() => {
+        showNotification('Detail kegiatan berhasil dibuka', 'success');
+    }, 1000);
+}
+
+function editKegiatan(id) {
+    showNotification('Membuka editor kegiatan...', 'info');
+    
+    // Simulate opening editor
+    setTimeout(() => {
+        showNotification('Editor kegiatan berhasil dibuka', 'success');
+    }, 1000);
+}
+
+function duplicateKegiatan(id) {
+    showNotification('Menduplikasi kegiatan...', 'info');
+    
+    // Simulate duplication
+    setTimeout(() => {
+        showNotification('Kegiatan berhasil diduplikasi', 'success');
+    }, 1000);
+}
+
+function deleteKegiatan(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus kegiatan ini?')) {
+        showNotification('Menghapus kegiatan...', 'info');
+        
+        // Simulate deletion
+        setTimeout(() => {
+            showNotification('Kegiatan berhasil dihapus', 'success');
+            event.target.closest('.col-xl-6').remove();
+        }, 1000);
+    }
+}
+
+function completeKegiatan(id) {
+    if (confirm('Apakah Anda yakin ingin menyelesaikan kegiatan ini?')) {
+        showNotification('Menyelesaikan kegiatan...', 'info');
+        
+        // Simulate completion
+        setTimeout(() => {
+            showNotification('Kegiatan berhasil diselesaikan', 'success');
+            // Update status badge
+            const badge = event.target.closest('.card').querySelector('.badge.bg-success');
+            if (badge) {
+                badge.textContent = 'Selesai';
+                badge.className = 'badge bg-primary';
+            }
+        }, 2000);
+    }
+}
+
+function startKegiatan(id) {
+    if (confirm('Apakah Anda yakin ingin memulai kegiatan ini?')) {
+        showNotification('Memulai kegiatan...', 'info');
+        
+        // Simulate start
+        setTimeout(() => {
+            showNotification('Kegiatan berhasil dimulai', 'success');
+            // Update status badge
+            const badge = event.target.closest('.card').querySelector('.badge.bg-warning');
+            if (badge) {
+                badge.textContent = 'Sedang Berlangsung';
+                badge.className = 'badge bg-success';
+            }
+        }, 2000);
+    }
+}
+
+function downloadReport(id) {
+    showNotification('Mengunduh laporan kegiatan...', 'info');
+    
+    // Simulate download
+    setTimeout(() => {
+        showNotification('Laporan kegiatan berhasil diunduh', 'success');
+    }, 2000);
+}
+
+function exportKegiatan() {
+    showNotification('Mengekspor data kegiatan...', 'info');
+    
+    // Simulate export
+    setTimeout(() => {
+        showNotification('Data kegiatan berhasil diekspor', 'success');
+    }, 3000);
+}
+
+// Form submission
+document.querySelector('#addKegiatanModal .btn-submit').addEventListener('click', function() {
+    const form = document.getElementById('addKegiatanForm');
+    if (form.checkValidity()) {
+        showNotification('Menyimpan kegiatan...', 'info');
+        bootstrap.Modal.getInstance(document.getElementById('addKegiatanModal')).hide();
+        form.reset();
+        
+        // Simulate save
+        setTimeout(() => {
+            showNotification('Kegiatan berhasil disimpan', 'success');
+        }, 2000);
+    } else {
+        form.reportValidity();
+    }
+});
+</script>
+{% endblock %}

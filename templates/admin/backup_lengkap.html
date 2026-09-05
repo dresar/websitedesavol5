@@ -1,0 +1,696 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manajemen Backup Lengkap - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Manajemen Backup Lengkap</h2>
+        <p class="text-muted">Kelola backup dan restore data sistem secara detail</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createBackupModal">
+            <i class="bi bi-plus-circle"></i> Buat Backup
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">25</div>
+                    <div class="stats-label">Total Backup</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-archive"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">2.5 GB</div>
+                    <div class="stats-label">Total Ukuran</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-hdd"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">3</div>
+                    <div class="stats-label">Backup Hari Ini</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-calendar-day"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+            <div>
+                <div class="stats-number">1</div>
+                <div class="stats-label">Backup Gagal</div>
+            </div>
+            <div class="stats-icon">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter and Search -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Cari backup..." id="searchBackup">
+        </div>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterStatus">
+            <option value="">Semua Status</option>
+            <option value="berhasil">Berhasil</option>
+            <option value="gagal">Gagal</option>
+            <option value="proses">Sedang Proses</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterType">
+            <option value="">Semua Jenis</option>
+            <option value="otomatis">Otomatis</option>
+            <option value="manual">Manual</option>
+            <option value="jadwal">Jadwal</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterDate">
+            <option value="">Semua Tanggal</option>
+            <option value="today">Hari Ini</option>
+            <option value="week">Minggu Ini</option>
+            <option value="month">Bulan Ini</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="exportBackupList()">
+                <i class="bi bi-download"></i> Export
+            </button>
+            <button class="btn btn-outline-secondary" onclick="resetFilters()">
+                <i class="bi bi-arrow-clockwise"></i> Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Backup List -->
+<div class="row" id="backupList">
+    <!-- Backup Card 1 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up">
+        <div class="card backup-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Backup Database Lengkap</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-success">Berhasil</span>
+                            <span class="badge bg-primary">Manual</span>
+                            <span class="badge bg-info">Database</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewBackup(1)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="downloadBackup(1)"><i class="bi bi-download"></i> Download</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="restoreBackup(1)"><i class="bi bi-arrow-clockwise"></i> Restore</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteBackup(1)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Backup lengkap database desa termasuk data penduduk, keuangan, dan surat
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-hdd text-primary"></i>
+                            <span>150 MB</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-calendar text-warning"></i>
+                            <span>12 Sep 2024</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-clock text-success"></i>
+                            <span>14:30:25</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-person text-info"></i>
+                            <span>Admin</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Lokasi: /backup/db_20240912_143025.sql</small>
+                    </div>
+                    <div class="backup-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewBackup(1)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="downloadBackup(1)">
+                            <i class="bi bi-download"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="restoreBackup(1)">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup Card 2 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="card backup-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Backup File Upload</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-warning">Sedang Proses</span>
+                            <span class="badge bg-info">Otomatis</span>
+                            <span class="badge bg-secondary">File</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewBackup(2)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="downloadBackup(2)"><i class="bi bi-download"></i> Download</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="restoreBackup(2)"><i class="bi bi-arrow-clockwise"></i> Restore</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteBackup(2)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Backup file upload dan dokumen desa
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-hdd text-primary"></i>
+                            <span>75 MB</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-calendar text-warning"></i>
+                            <span>12 Sep 2024</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-clock text-warning"></i>
+                            <span>15:45:10</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-person text-info"></i>
+                            <span>System</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Lokasi: /backup/files_20240912_154510.zip</small>
+                    </div>
+                    <div class="backup-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewBackup(2)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="downloadBackup(2)">
+                            <i class="bi bi-download"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-info" onclick="restoreBackup(2)">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup Card 3 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="card backup-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Backup Konfigurasi</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-success">Berhasil</span>
+                            <span class="badge bg-warning">Jadwal</span>
+                            <span class="badge bg-primary">Config</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewBackup(3)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="downloadBackup(3)"><i class="bi bi-download"></i> Download</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="restoreBackup(3)"><i class="bi bi-arrow-clockwise"></i> Restore</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteBackup(3)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Backup konfigurasi sistem dan pengaturan aplikasi
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-hdd text-primary"></i>
+                            <span>5 MB</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-calendar text-warning"></i>
+                            <span>11 Sep 2024</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-clock text-success"></i>
+                            <span>02:00:00</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-person text-info"></i>
+                            <span>System</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Lokasi: /backup/config_20240911_020000.json</small>
+                    </div>
+                    <div class="backup-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewBackup(3)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="downloadBackup(3)">
+                            <i class="bi bi-download"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="restoreBackup(3)">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup Card 4 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="card backup-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Backup Log System</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-danger">Gagal</span>
+                            <span class="badge bg-info">Otomatis</span>
+                            <span class="badge bg-secondary">Log</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewBackup(4)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="downloadBackup(4)"><i class="bi bi-download"></i> Download</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="restoreBackup(4)"><i class="bi bi-arrow-clockwise"></i> Restore</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteBackup(4)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Backup log sistem dan audit trail
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-hdd text-primary"></i>
+                            <span>0 MB</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-calendar text-warning"></i>
+                            <span>10 Sep 2024</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-clock text-danger"></i>
+                            <span>03:00:00</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="backup-info">
+                            <i class="bi bi-person text-info"></i>
+                            <span>System</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Error: Disk space tidak mencukupi</small>
+                    </div>
+                    <div class="backup-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewBackup(4)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="retryBackup(4)">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="restoreBackup(4)">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Backup Modal -->
+<div class="modal fade" id="createBackupModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buat Backup Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createBackupForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nama Backup</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis Backup</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Jenis</option>
+                                <option value="database">Database</option>
+                                <option value="files">File Upload</option>
+                                <option value="config">Konfigurasi</option>
+                                <option value="logs">Log System</option>
+                                <option value="full">Full Backup</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Deskripsi</label>
+                        <textarea class="form-control" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Lokasi Penyimpanan</label>
+                            <select class="form-select" required>
+                                <option value="local">Local Storage</option>
+                                <option value="cloud">Cloud Storage</option>
+                                <option value="external">External Drive</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Kompresi</label>
+                            <select class="form-select" required>
+                                <option value="zip">ZIP</option>
+                                <option value="tar">TAR</option>
+                                <option value="gzip">GZIP</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="encryptBackup">
+                            <label class="form-check-label" for="encryptBackup">
+                                Enkripsi Backup
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="scheduleBackup">
+                            <label class="form-check-label" for="scheduleBackup">
+                                Jadwalkan Backup
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary btn-submit">Buat Backup</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.backup-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.backup-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.backup-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.backup-info i {
+    margin-right: 8px;
+    width: 16px;
+}
+
+.backup-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Search and filter functionality
+document.getElementById('searchBackup').addEventListener('input', filterBackup);
+document.getElementById('filterStatus').addEventListener('change', filterBackup);
+document.getElementById('filterType').addEventListener('change', filterBackup);
+document.getElementById('filterDate').addEventListener('change', filterBackup);
+
+function filterBackup() {
+    const searchTerm = document.getElementById('searchBackup').value.toLowerCase();
+    const statusFilter = document.getElementById('filterStatus').value;
+    const typeFilter = document.getElementById('filterType').value;
+    const dateFilter = document.getElementById('filterDate').value;
+    
+    const cards = document.querySelectorAll('.backup-card');
+    
+    cards.forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const description = card.querySelector('.card-text').textContent.toLowerCase();
+        const status = card.querySelector('.badge.bg-success, .badge.bg-warning, .badge.bg-danger').textContent.toLowerCase();
+        const type = card.querySelector('.badge.bg-primary, .badge.bg-info, .badge.bg-warning, .badge.bg-secondary').textContent.toLowerCase();
+        
+        const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+        const matchesStatus = !statusFilter || status.includes(statusFilter);
+        const matchesType = !typeFilter || type.includes(typeFilter);
+        const matchesDate = !dateFilter || true; // Simplified for demo
+        
+        if (matchesSearch && matchesStatus && matchesType && matchesDate) {
+            card.closest('.col-xl-6').style.display = 'block';
+        } else {
+            card.closest('.col-xl-6').style.display = 'none';
+        }
+    });
+}
+
+function resetFilters() {
+    document.getElementById('searchBackup').value = '';
+    document.getElementById('filterStatus').value = '';
+    document.getElementById('filterType').value = '';
+    document.getElementById('filterDate').value = '';
+    filterBackup();
+}
+
+// CRUD operations
+function viewBackup(id) {
+    showNotification('Membuka detail backup...', 'info');
+    
+    // Simulate opening backup detail
+    setTimeout(() => {
+        showNotification('Detail backup berhasil dibuka', 'success');
+    }, 1000);
+}
+
+function downloadBackup(id) {
+    showNotification('Mengunduh backup...', 'info');
+    
+    // Simulate download
+    setTimeout(() => {
+        showNotification('Backup berhasil diunduh', 'success');
+    }, 2000);
+}
+
+function restoreBackup(id) {
+    if (confirm('Apakah Anda yakin ingin melakukan restore dari backup ini? Tindakan ini akan mengganti data yang ada.')) {
+        showNotification('Melakukan restore backup...', 'info');
+        
+        // Simulate restore
+        setTimeout(() => {
+            showNotification('Restore backup berhasil dilakukan', 'success');
+        }, 3000);
+    }
+}
+
+function deleteBackup(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus backup ini?')) {
+        showNotification('Menghapus backup...', 'info');
+        
+        // Simulate deletion
+        setTimeout(() => {
+            showNotification('Backup berhasil dihapus', 'success');
+            event.target.closest('.col-xl-6').remove();
+        }, 1000);
+    }
+}
+
+function retryBackup(id) {
+    if (confirm('Apakah Anda yakin ingin mencoba backup ulang?')) {
+        showNotification('Mencoba backup ulang...', 'info');
+        
+        // Simulate retry
+        setTimeout(() => {
+            showNotification('Backup berhasil dilakukan', 'success');
+        }, 2000);
+    }
+}
+
+function exportBackupList() {
+    showNotification('Mengekspor daftar backup...', 'info');
+    
+    // Simulate export
+    setTimeout(() => {
+        showNotification('Daftar backup berhasil diekspor', 'success');
+    }, 3000);
+}
+
+// Form submission
+document.querySelector('#createBackupModal .btn-submit').addEventListener('click', function() {
+    const form = document.getElementById('createBackupForm');
+    if (form.checkValidity()) {
+        showNotification('Membuat backup...', 'info');
+        bootstrap.Modal.getInstance(document.getElementById('createBackupModal')).hide();
+        form.reset();
+        
+        // Simulate backup creation
+        setTimeout(() => {
+            showNotification('Backup berhasil dibuat', 'success');
+        }, 5000);
+    } else {
+        form.reportValidity();
+    }
+});
+</script>
+{% endblock %}

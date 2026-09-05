@@ -1,0 +1,468 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manajemen Monitoring Lengkap - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Manajemen Monitoring Lengkap</h2>
+        <p class="text-muted">Pantau performa dan kesehatan sistem secara real-time</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" onclick="refreshMonitoring()">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+    </div>
+</div>
+
+<!-- System Status Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">99.9%</div>
+                    <div class="stats-label">Uptime</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">45%</div>
+                    <div class="stats-label">CPU Usage</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-cpu"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">2.1 GB</div>
+                    <div class="stats-label">Memory Usage</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-memory"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+            <div>
+                <div class="stats-number">15 GB</div>
+                <div class="stats-label">Disk Usage</div>
+            </div>
+            <div class="stats-icon">
+                <i class="bi bi-hdd"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Real-time Charts -->
+<div class="row mb-4">
+    <div class="col-xl-6 col-lg-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">CPU & Memory Usage</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="systemChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-6 col-lg-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Network Traffic</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="networkChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Services Status -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Status Layanan Sistem</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Layanan</th>
+                                <th>Status</th>
+                                <th>Uptime</th>
+                                <th>CPU</th>
+                                <th>Memory</th>
+                                <th>Port</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-aos="fade-up">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-server text-primary me-2"></i>
+                                        <span>Web Server (Apache)</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Running</span>
+                                </td>
+                                <td>5d 12h 30m</td>
+                                <td>25%</td>
+                                <td>512 MB</td>
+                                <td>80, 443</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-warning" onclick="restartService('apache')">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <tr data-aos="fade-up" data-aos-delay="100">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-database text-info me-2"></i>
+                                        <span>Database (MySQL)</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Running</span>
+                                </td>
+                                <td>5d 12h 30m</td>
+                                <td>15%</td>
+                                <td>1.2 GB</td>
+                                <td>3306</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-warning" onclick="restartService('mysql')">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <tr data-aos="fade-up" data-aos-delay="200">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-envelope text-warning me-2"></i>
+                                        <span>Mail Server (Postfix)</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Running</span>
+                                </td>
+                                <td>5d 12h 30m</td>
+                                <td>5%</td>
+                                <td>128 MB</td>
+                                <td>25, 587</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-warning" onclick="restartService('postfix')">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <tr data-aos="fade-up" data-aos-delay="300">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-shield text-danger me-2"></i>
+                                        <span>Firewall (iptables)</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning">Warning</span>
+                                </td>
+                                <td>2d 8h 15m</td>
+                                <td>2%</td>
+                                <td>64 MB</td>
+                                <td>-</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-warning" onclick="restartService('iptables')">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Alerts -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Alert Terbaru</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>Warning:</strong> CPU usage mencapai 80% pada server utama
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Info:</strong> Backup otomatis berhasil dilakukan
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <strong>Success:</strong> Sistem berhasil diupdate ke versi terbaru
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Logs -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">System Logs</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Waktu</th>
+                                <th>Level</th>
+                                <th>Pesan</th>
+                                <th>Source</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-aos="fade-up">
+                                <td>12 Sep 2024 14:30:25</td>
+                                <td><span class="badge bg-info">INFO</span></td>
+                                <td>User admin berhasil login</td>
+                                <td>auth.log</td>
+                            </tr>
+                            
+                            <tr data-aos="fade-up" data-aos-delay="100">
+                                <td>12 Sep 2024 14:25:10</td>
+                                <td><span class="badge bg-warning">WARN</span></td>
+                                <td>CPU usage tinggi: 85%</td>
+                                <td>system.log</td>
+                            </tr>
+                            
+                            <tr data-aos="fade-up" data-aos-delay="200">
+                                <td>12 Sep 2024 14:20:45</td>
+                                <td><span class="badge bg-success">SUCCESS</span></td>
+                                <td>Backup database berhasil</td>
+                                <td>backup.log</td>
+                            </tr>
+                            
+                            <tr data-aos="fade-up" data-aos-delay="300">
+                                <td>12 Sep 2024 14:15:30</td>
+                                <td><span class="badge bg-danger">ERROR</span></td>
+                                <td>Failed to connect to database</td>
+                                <td>error.log</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.stats-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.stats-number {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stats-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.stats-icon {
+    font-size: 2.5rem;
+    opacity: 0.7;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.alert {
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 15px;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 15px 15px 0 0 !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize charts
+let systemChart, networkChart;
+
+function initCharts() {
+    // System Chart
+    const systemCtx = document.getElementById('systemChart').getContext('2d');
+    systemChart = new Chart(systemCtx, {
+        type: 'line',
+        data: {
+            labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+            datasets: [{
+                label: 'CPU Usage (%)',
+                data: [25, 30, 45, 60, 55, 40],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4
+            }, {
+                label: 'Memory Usage (%)',
+                data: [40, 45, 50, 55, 50, 45],
+                borderColor: '#f093fb',
+                backgroundColor: 'rgba(240, 147, 251, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+
+    // Network Chart
+    const networkCtx = document.getElementById('networkChart').getContext('2d');
+    networkChart = new Chart(networkCtx, {
+        type: 'bar',
+        data: {
+            labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+            datasets: [{
+                label: 'Inbound (MB)',
+                data: [120, 150, 200, 180, 160, 140],
+                backgroundColor: '#667eea'
+            }, {
+                label: 'Outbound (MB)',
+                data: [80, 100, 120, 110, 90, 85],
+                backgroundColor: '#f093fb'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// Refresh monitoring data
+function refreshMonitoring() {
+    showNotification('Memperbarui data monitoring...', 'info');
+    
+    // Simulate data refresh
+    setTimeout(() => {
+        showNotification('Data monitoring berhasil diperbarui', 'success');
+        
+        // Update charts with new data
+        if (systemChart) {
+            systemChart.data.datasets[0].data = [30, 35, 50, 65, 60, 45];
+            systemChart.data.datasets[1].data = [45, 50, 55, 60, 55, 50];
+            systemChart.update();
+        }
+        
+        if (networkChart) {
+            networkChart.data.datasets[0].data = [140, 170, 220, 200, 180, 160];
+            networkChart.data.datasets[1].data = [90, 110, 130, 120, 100, 95];
+            networkChart.update();
+        }
+    }, 2000);
+}
+
+// Restart service
+function restartService(service) {
+    if (confirm(`Apakah Anda yakin ingin me-restart layanan ${service}?`)) {
+        showNotification(`Me-restart layanan ${service}...`, 'info');
+        
+        // Simulate service restart
+        setTimeout(() => {
+            showNotification(`Layanan ${service} berhasil di-restart`, 'success');
+        }, 3000);
+    }
+}
+
+// Initialize charts when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initCharts();
+    
+    // Auto refresh every 30 seconds
+    setInterval(refreshMonitoring, 30000);
+});
+</script>
+{% endblock %}

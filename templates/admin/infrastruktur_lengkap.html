@@ -1,0 +1,718 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manajemen Infrastruktur Lengkap - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Manajemen Infrastruktur Lengkap</h2>
+        <p class="text-muted">Kelola infrastruktur dan fasilitas desa secara detail</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addInfraModal">
+            <i class="bi bi-plus-circle"></i> Tambah Infrastruktur
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">25</div>
+                    <div class="stats-label">Total Infrastruktur</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-building"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">20</div>
+                    <div class="stats-label">Berfungsi Baik</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">3</div>
+                    <div class="stats-label">Perlu Perbaikan</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">2</div>
+                    <div class="stats-label">Rusak Total</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-x-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter and Search -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Cari infrastruktur..." id="searchInfra">
+        </div>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterStatus">
+            <option value="">Semua Status</option>
+            <option value="baik">Berfungsi Baik</option>
+            <option value="perbaikan">Perlu Perbaikan</option>
+            <option value="rusak">Rusak Total</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterType">
+            <option value="">Semua Jenis</option>
+            <option value="jalan">Jalan</option>
+            <option value="jembatan">Jembatan</option>
+            <option value="drainase">Drainase</option>
+            <option value="fasilitas">Fasilitas Umum</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select" id="filterRT">
+            <option value="">Semua RT</option>
+            <option value="01">RT 01</option>
+            <option value="02">RT 02</option>
+            <option value="03">RT 03</option>
+            <option value="04">RT 04</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="exportInfra()">
+                <i class="bi bi-download"></i> Export
+            </button>
+            <button class="btn btn-outline-secondary" onclick="resetFilters()">
+                <i class="bi bi-arrow-clockwise"></i> Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Infrastructure List -->
+<div class="row" id="infraList">
+    <!-- Infrastructure Card 1 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up">
+        <div class="card infra-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Jalan Utama Desa</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-success">Berfungsi Baik</span>
+                            <span class="badge bg-primary">Jalan</span>
+                            <span class="badge bg-info">RT 01-05</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewInfra(1)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editInfra(1)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateInfra(1)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteInfra(1)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Jalan penghubung antar RT dengan kondisi baik, sudah diaspal dan memiliki drainase yang memadai
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-rulers text-primary"></i>
+                            <span>2.5 km</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-calendar text-warning"></i>
+                            <span>Dibangun: 2020</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-geo-alt text-success"></i>
+                            <span>RT 01 - RT 05</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-currency-dollar text-info"></i>
+                            <span>Rp 500M</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Terakhir diperiksa: 10 Sep 2024</small>
+                    </div>
+                    <div class="infra-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewInfra(1)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editInfra(1)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="maintainInfra(1)">
+                            <i class="bi bi-tools"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Infrastructure Card 2 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="card infra-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Jembatan Sungai Ciliwung</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-danger">Rusak Total</span>
+                            <span class="badge bg-warning">Jembatan</span>
+                            <span class="badge bg-info">Dusun A-B</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewInfra(2)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editInfra(2)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateInfra(2)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteInfra(2)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Jembatan penghubung ke dusun tetangga yang mengalami kerusakan parah akibat banjir besar tahun 2023
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-rulers text-primary"></i>
+                            <span>50 m</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-calendar text-warning"></i>
+                            <span>Dibangun: 2018</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-geo-alt text-success"></i>
+                            <span>Dusun A - Dusun B</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-currency-dollar text-info"></i>
+                            <span>Rp 200M</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Terakhir diperiksa: 5 Sep 2024</small>
+                    </div>
+                    <div class="infra-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewInfra(2)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editInfra(2)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="repairInfra(2)">
+                            <i class="bi bi-hammer"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Infrastructure Card 3 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="card infra-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Sistem Drainase RT 03</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-warning">Perlu Perbaikan</span>
+                            <span class="badge bg-info">Drainase</span>
+                            <span class="badge bg-primary">RT 03</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewInfra(3)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editInfra(3)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateInfra(3)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteInfra(3)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Saluran pembuangan air hujan yang membutuhkan perbaikan pada beberapa bagian
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-rulers text-primary"></i>
+                            <span>1.2 km</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-calendar text-warning"></i>
+                            <span>Dibangun: 2019</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-geo-alt text-success"></i>
+                            <span>RT 03</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-currency-dollar text-info"></i>
+                            <span>Rp 150M</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Terakhir diperiksa: 8 Sep 2024</small>
+                    </div>
+                    <div class="infra-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewInfra(3)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editInfra(3)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="maintainInfra(3)">
+                            <i class="bi bi-tools"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Infrastructure Card 4 -->
+    <div class="col-xl-6 col-lg-12 mb-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="card infra-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1">Pos Ronda Malam</h5>
+                        <div class="d-flex gap-2 mb-2">
+                            <span class="badge bg-success">Berfungsi Baik</span>
+                            <span class="badge bg-secondary">Fasilitas</span>
+                            <span class="badge bg-primary">RT 02</span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="viewInfra(4)"><i class="bi bi-eye"></i> Lihat</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="editInfra(4)"><i class="bi bi-pencil"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="duplicateInfra(4)"><i class="bi bi-files"></i> Duplikat</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteInfra(4)"><i class="bi bi-trash"></i> Hapus</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="card-text text-muted mb-3">
+                    Pos keamanan untuk ronda malam dengan kondisi baik dan terawat
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-rulers text-primary"></i>
+                            <span>4x3 m</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-calendar text-warning"></i>
+                            <span>Dibangun: 2021</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-geo-alt text-success"></i>
+                            <span>RT 02</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="infra-info">
+                            <i class="bi bi-currency-dollar text-info"></i>
+                            <span>Rp 50M</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Terakhir diperiksa: 12 Sep 2024</small>
+                    </div>
+                    <div class="infra-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewInfra(4)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editInfra(4)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="maintainInfra(4)">
+                            <i class="bi bi-tools"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Infrastructure Modal -->
+<div class="modal fade" id="addInfraModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Infrastruktur Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addInfraForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nama Infrastruktur</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Jenis</option>
+                                <option value="jalan">Jalan</option>
+                                <option value="jembatan">Jembatan</option>
+                                <option value="drainase">Drainase</option>
+                                <option value="fasilitas">Fasilitas Umum</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Deskripsi</label>
+                        <textarea class="form-control" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Lokasi</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ukuran/Dimensi</label>
+                            <input type="text" class="form-control" placeholder="Contoh: 2.5 km">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tahun Dibangun</label>
+                            <input type="number" class="form-control" min="1900" max="2024">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" required>
+                                <option value="baik">Berfungsi Baik</option>
+                                <option value="perbaikan">Perlu Perbaikan</option>
+                                <option value="rusak">Rusak Total</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Biaya Pembangunan</label>
+                            <input type="number" class="form-control" placeholder="Dalam juta rupiah">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">RT</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih RT</option>
+                                <option value="01">RT 01</option>
+                                <option value="02">RT 02</option>
+                                <option value="03">RT 03</option>
+                                <option value="04">RT 04</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Foto Infrastruktur</label>
+                        <input type="file" class="form-control" accept="image/*" multiple>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary btn-submit">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.infra-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.infra-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.infra-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.infra-info i {
+    margin-right: 8px;
+    width: 16px;
+}
+
+.infra-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Search and filter functionality
+document.getElementById('searchInfra').addEventListener('input', filterInfra);
+document.getElementById('filterStatus').addEventListener('change', filterInfra);
+document.getElementById('filterType').addEventListener('change', filterInfra);
+document.getElementById('filterRT').addEventListener('change', filterInfra);
+
+function filterInfra() {
+    const searchTerm = document.getElementById('searchInfra').value.toLowerCase();
+    const statusFilter = document.getElementById('filterStatus').value;
+    const typeFilter = document.getElementById('filterType').value;
+    const rtFilter = document.getElementById('filterRT').value;
+    
+    const cards = document.querySelectorAll('.infra-card');
+    
+    cards.forEach(card => {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const description = card.querySelector('.card-text').textContent.toLowerCase();
+        const status = card.querySelector('.badge.bg-success, .badge.bg-warning, .badge.bg-danger').textContent.toLowerCase();
+        const type = card.querySelector('.badge.bg-primary, .badge.bg-info, .badge.bg-warning, .badge.bg-secondary').textContent.toLowerCase();
+        const rt = card.querySelector('.badge.bg-info, .badge.bg-primary').textContent.toLowerCase();
+        
+        const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+        const matchesStatus = !statusFilter || status.includes(statusFilter);
+        const matchesType = !typeFilter || type.includes(typeFilter);
+        const matchesRT = !rtFilter || rt.includes(rtFilter);
+        
+        if (matchesSearch && matchesStatus && matchesType && matchesRT) {
+            card.closest('.col-xl-6').style.display = 'block';
+        } else {
+            card.closest('.col-xl-6').style.display = 'none';
+        }
+    });
+}
+
+function resetFilters() {
+    document.getElementById('searchInfra').value = '';
+    document.getElementById('filterStatus').value = '';
+    document.getElementById('filterType').value = '';
+    document.getElementById('filterRT').value = '';
+    filterInfra();
+}
+
+// CRUD operations
+function viewInfra(id) {
+    showNotification('Membuka detail infrastruktur...', 'info');
+    
+    // Simulate opening infra detail
+    setTimeout(() => {
+        showNotification('Detail infrastruktur berhasil dibuka', 'success');
+    }, 1000);
+}
+
+function editInfra(id) {
+    showNotification('Membuka editor infrastruktur...', 'info');
+    
+    // Simulate opening editor
+    setTimeout(() => {
+        showNotification('Editor infrastruktur berhasil dibuka', 'success');
+    }, 1000);
+}
+
+function duplicateInfra(id) {
+    showNotification('Menduplikasi infrastruktur...', 'info');
+    
+    // Simulate duplication
+    setTimeout(() => {
+        showNotification('Infrastruktur berhasil diduplikasi', 'success');
+    }, 1000);
+}
+
+function deleteInfra(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus infrastruktur ini?')) {
+        showNotification('Menghapus infrastruktur...', 'info');
+        
+        // Simulate deletion
+        setTimeout(() => {
+            showNotification('Infrastruktur berhasil dihapus', 'success');
+            event.target.closest('.col-xl-6').remove();
+        }, 1000);
+    }
+}
+
+function maintainInfra(id) {
+    showNotification('Membuka jadwal perawatan...', 'info');
+    
+    // Simulate opening maintenance
+    setTimeout(() => {
+        showNotification('Jadwal perawatan berhasil dibuka', 'success');
+    }, 1000);
+}
+
+function repairInfra(id) {
+    if (confirm('Apakah Anda yakin ingin membuat jadwal perbaikan untuk infrastruktur ini?')) {
+        showNotification('Membuat jadwal perbaikan...', 'info');
+        
+        // Simulate repair scheduling
+        setTimeout(() => {
+            showNotification('Jadwal perbaikan berhasil dibuat', 'success');
+        }, 2000);
+    }
+}
+
+function exportInfra() {
+    showNotification('Mengekspor data infrastruktur...', 'info');
+    
+    // Simulate export
+    setTimeout(() => {
+        showNotification('Data infrastruktur berhasil diekspor', 'success');
+    }, 3000);
+}
+
+// Form submission
+document.querySelector('#addInfraModal .btn-submit').addEventListener('click', function() {
+    const form = document.getElementById('addInfraForm');
+    if (form.checkValidity()) {
+        showNotification('Menyimpan infrastruktur...', 'info');
+        bootstrap.Modal.getInstance(document.getElementById('addInfraModal')).hide();
+        form.reset();
+        
+        // Simulate save
+        setTimeout(() => {
+            showNotification('Infrastruktur berhasil disimpan', 'success');
+        }, 2000);
+    } else {
+        form.reportValidity();
+    }
+});
+</script>
+{% endblock %}

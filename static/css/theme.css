@@ -1,0 +1,376 @@
+/* Dark/Light Theme System */
+
+:root {
+    /* Light Theme Colors */
+    --bs-body-bg: #f8f9fa;
+    --bs-body-color: #212529;
+    --bs-primary: #0d6efd;
+    --bs-secondary: #6c757d;
+    --bs-success: #198754;
+    --bs-danger: #dc3545;
+    --bs-warning: #ffc107;
+    --bs-info: #0dcaf0;
+    --bs-light: #f8f9fa;
+    --bs-dark: #212529;
+    
+    /* Custom Colors */
+    --sidebar-bg: #2c3e50;
+    --sidebar-hover: #34495e;
+    --card-bg: #ffffff;
+    --card-border: #e9ecef;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --text-muted: #adb5bd;
+    --border-color: #dee2e6;
+    --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+}
+
+[data-bs-theme="dark"] {
+    /* Dark Theme Colors */
+    --bs-body-bg: #0d1117;
+    --bs-body-color: #e6edf3;
+    --bs-primary: #58a6ff;
+    --bs-secondary: #7d8590;
+    --bs-success: #3fb950;
+    --bs-danger: #f85149;
+    --bs-warning: #d29922;
+    --bs-info: #39d353;
+    --bs-light: #21262d;
+    --bs-dark: #f0f6fc;
+    
+    /* Custom Dark Colors */
+    --sidebar-bg: #161b22;
+    --sidebar-hover: #21262d;
+    --card-bg: #161b22;
+    --card-border: #30363d;
+    --text-primary: #e6edf3;
+    --text-secondary: #7d8590;
+    --text-muted: #8b949e;
+    --border-color: #30363d;
+    --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.4);
+}
+
+/* Theme Variables */
+body {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    transition: all 0.3s ease;
+}
+
+/* Sidebar Dark Theme */
+.sidebar {
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+}
+
+.sidebar-header {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-nav .nav-link {
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+.sidebar-nav .nav-link:hover {
+    background-color: var(--sidebar-hover);
+    color: var(--text-primary);
+}
+
+.sidebar-nav .nav-link.active {
+    background-color: var(--bs-primary);
+    color: white;
+}
+
+/* Cards Dark Theme */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background-color: var(--bs-primary);
+    color: white;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Tables Dark Theme */
+.table {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+
+.table thead th {
+    background-color: var(--bs-primary);
+    color: white;
+    border-color: var(--border-color);
+}
+
+.table tbody td {
+    border-color: var(--border-color);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--bs-light);
+}
+
+/* Forms Dark Theme */
+.form-control {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    background-color: var(--card-bg);
+    border-color: var(--bs-primary);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-select {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.form-select:focus {
+    background-color: var(--card-bg);
+    border-color: var(--bs-primary);
+    color: var(--text-primary);
+}
+
+/* Buttons Dark Theme */
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Stats Cards Dark Theme */
+.stats-card {
+    background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));
+    color: white;
+    border: none;
+}
+
+/* Modal Dark Theme */
+.modal-content {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.modal-header {
+    background-color: var(--bs-primary);
+    color: white;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color);
+}
+
+/* Dropdown Dark Theme */
+.dropdown-menu {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: var(--bs-light);
+    color: var(--text-primary);
+}
+
+/* Navbar Dark Theme */
+.navbar {
+    background-color: var(--card-bg) !important;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.navbar-nav .nav-link {
+    color: var(--text-primary);
+}
+
+/* Pagination Dark Theme */
+.pagination .page-link {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+
+.pagination .page-link:hover {
+    background-color: var(--bs-light);
+    color: var(--text-primary);
+}
+
+/* Alert Dark Theme */
+.alert {
+    border: 1px solid var(--border-color);
+}
+
+.alert-success {
+    background-color: rgba(63, 185, 80, 0.1);
+    border-color: var(--bs-success);
+    color: var(--bs-success);
+}
+
+.alert-warning {
+    background-color: rgba(210, 153, 34, 0.1);
+    border-color: var(--bs-warning);
+    color: var(--bs-warning);
+}
+
+.alert-danger {
+    background-color: rgba(248, 81, 73, 0.1);
+    border-color: var(--bs-danger);
+    color: var(--bs-danger);
+}
+
+.alert-info {
+    background-color: rgba(57, 211, 83, 0.1);
+    border-color: var(--bs-info);
+    color: var(--bs-info);
+}
+
+/* Badge Dark Theme */
+.badge {
+    transition: all 0.3s ease;
+}
+
+/* List Group Dark Theme */
+.list-group-item {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.list-group-item:hover {
+    background-color: var(--bs-light);
+}
+
+/* Input Group Dark Theme */
+.input-group-text {
+    background-color: var(--bs-light);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Search Box Dark Theme */
+.search-box .search-icon {
+    color: var(--text-muted);
+}
+
+/* Chart Container Dark Theme */
+.chart-container {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    background: var(--bs-primary);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    color: white;
+    font-size: 1.2rem;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile Responsive Theme */
+@media (max-width: 768px) {
+    .theme-toggle {
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
+/* Smooth Transitions */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Custom Scrollbar Dark Theme */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bs-light);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bs-primary);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bs-info);
+}
+
+/* Loading Spinner Dark Theme */
+.spinner-border {
+    color: var(--bs-primary);
+}
+
+/* Progress Bar Dark Theme */
+.progress {
+    background-color: var(--bs-light);
+}
+
+.progress-bar {
+    background-color: var(--bs-primary);
+}
+
+/* Toast Dark Theme */
+.toast {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.toast-header {
+    background-color: var(--bs-light);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}

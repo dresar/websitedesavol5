@@ -1,0 +1,692 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manajemen Backup - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Manajemen Backup</h2>
+        <p class="text-muted">Kelola backup dan restore data sistem</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createBackupModal">
+            <i class="bi bi-cloud-arrow-up"></i> Buat Backup
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">15</div>
+                    <div class="stats-label">Total Backup</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-cloud-arrow-up"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">12</div>
+                    <div class="stats-label">Berhasil</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">2</div>
+                    <div class="stats-label">Dalam Proses</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-clock"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">1</div>
+                    <div class="stats-label">Gagal</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-x-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Backup Configuration -->
+<div class="row mb-4">
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-gear"></i> Konfigurasi Backup
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="backupConfigForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Frekuensi Backup</label>
+                            <select class="form-select" required>
+                                <option value="daily">Harian</option>
+                                <option value="weekly" selected>Mingguan</option>
+                                <option value="monthly">Bulanan</option>
+                                <option value="manual">Manual Saja</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Waktu Backup</label>
+                            <input type="time" class="form-control" value="02:00" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Lokasi Backup</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="backupLocation" id="localBackup" value="local" checked>
+                                <label class="form-check-label" for="localBackup">
+                                    <i class="bi bi-hdd"></i> Lokal
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="backupLocation" id="cloudBackup" value="cloud">
+                                <label class="form-check-label" for="cloudBackup">
+                                    <i class="bi bi-cloud"></i> Cloud Storage
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Retensi Backup (hari)</label>
+                            <input type="number" class="form-control" value="30" min="7" max="365">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Data yang Di-backup</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="backupDatabase" checked>
+                                    <label class="form-check-label" for="backupDatabase">
+                                        Database
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="backupFiles" checked>
+                                    <label class="form-check-label" for="backupFiles">
+                                        File Upload
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="backupConfig" checked>
+                                    <label class="form-check-label" for="backupConfig">
+                                        Konfigurasi
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="backupLogs">
+                                    <label class="form-check-label" for="backupLogs">
+                                        Log Sistem
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-primary" onclick="saveBackupConfig()">
+                            <i class="bi bi-check-circle"></i> Simpan Konfigurasi
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="testBackup()">
+                            <i class="bi bi-play-circle"></i> Test Backup
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle"></i> Status Sistem
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Ruang Disk</span>
+                    <span class="badge bg-warning">75% Terpakai</span>
+                </div>
+                <div class="progress mb-3" style="height: 8px;">
+                    <div class="progress-bar bg-warning" style="width: 75%"></div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Backup Terakhir</span>
+                    <span class="text-muted">12 Sep 2024</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Ukuran Backup</span>
+                    <span class="text-muted">2.3 GB</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Status Otomatis</span>
+                    <span class="badge bg-success">Aktif</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Backup History -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-clock-history"></i> Riwayat Backup
+        </h5>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary" onclick="refreshBackupList()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="cleanOldBackups()">
+                <i class="bi bi-trash"></i> Hapus Lama
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Jenis</th>
+                        <th>Ukuran</th>
+                        <th>Status</th>
+                        <th>Durasi</th>
+                        <th>Lokasi</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Backup Row 1 -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">13 Sep 2024</span>
+                                <small class="text-muted">02:00:15</small>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary">Otomatis</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold">2.3 GB</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">Berhasil</span>
+                        </td>
+                        <td>
+                            <span class="text-muted">5 menit</span>
+                        </td>
+                        <td>
+                            <code>/backup/2024-09-13_020015.sql</code>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" onclick="downloadBackup(1)">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                                <button class="btn btn-outline-success" onclick="restoreBackup(1)">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="deleteBackup(1)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Backup Row 2 -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">12 Sep 2024</span>
+                                <small class="text-muted">02:00:10</small>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary">Otomatis</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold">2.1 GB</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">Berhasil</span>
+                        </td>
+                        <td>
+                            <span class="text-muted">4 menit</span>
+                        </td>
+                        <td>
+                            <code>/backup/2024-09-12_020010.sql</code>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" onclick="downloadBackup(2)">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                                <button class="btn btn-outline-success" onclick="restoreBackup(2)">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="deleteBackup(2)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Backup Row 3 -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">11 Sep 2024</span>
+                                <small class="text-muted">14:30:25</small>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning">Manual</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold">2.2 GB</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning">Dalam Proses</span>
+                        </td>
+                        <td>
+                            <span class="text-muted">-</span>
+                        </td>
+                        <td>
+                            <code>/backup/2024-09-11_143025.sql</code>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-secondary" disabled>
+                                    <i class="bi bi-hourglass-split"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary" disabled>
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="cancelBackup(3)">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Backup Row 4 -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">10 Sep 2024</span>
+                                <small class="text-muted">02:00:05</small>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary">Otomatis</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold">2.0 GB</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">Berhasil</span>
+                        </td>
+                        <td>
+                            <span class="text-muted">3 menit</span>
+                        </td>
+                        <td>
+                            <code>/backup/2024-09-10_020005.sql</code>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" onclick="downloadBackup(4)">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                                <button class="btn btn-outline-success" onclick="restoreBackup(4)">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="deleteBackup(4)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Backup Row 5 -->
+                    <tr>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">09 Sep 2024</span>
+                                <small class="text-muted">02:00:00</small>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary">Otomatis</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold">-</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-danger">Gagal</span>
+                        </td>
+                        <td>
+                            <span class="text-muted">-</span>
+                        </td>
+                        <td>
+                            <code>-</code>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-secondary" disabled>
+                                    <i class="bi bi-download"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary" disabled>
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="deleteBackup(5)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Create Backup Modal -->
+<div class="modal fade" id="createBackupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buat Backup Manual</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createBackupForm">
+                    <div class="mb-3">
+                        <label class="form-label">Nama Backup</label>
+                        <input type="text" class="form-control" placeholder="Backup Manual - 13 Sep 2024" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Jenis Backup</label>
+                        <select class="form-select" required>
+                            <option value="full">Full Backup (Database + Files)</option>
+                            <option value="database">Database Saja</option>
+                            <option value="files">Files Saja</option>
+                            <option value="config">Konfigurasi Saja</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Kompresi</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="compressBackup" checked>
+                            <label class="form-check-label" for="compressBackup">
+                                Kompresi file backup (mengurangi ukuran file)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Enkripsi</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="encryptBackup">
+                            <label class="form-check-label" for="encryptBackup">
+                                Enkripsi file backup (keamanan tambahan)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Password Enkripsi</label>
+                        <input type="password" class="form-control" id="encryptPassword" disabled>
+                        <small class="text-muted">Wajib diisi jika enkripsi diaktifkan</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary btn-submit">Buat Backup</button>
+            </div>
+        </div>
+</div>
+
+<!-- Restore Backup Modal -->
+<div class="modal fade" id="restoreBackupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Restore Backup</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Peringatan:</strong> Proses restore akan mengganti semua data saat ini dengan data dari backup. Pastikan untuk membuat backup terbaru sebelum melakukan restore.
+                </div>
+                
+                <form id="restoreBackupForm">
+                    <div class="mb-3">
+                        <label class="form-label">File Backup</label>
+                        <input type="file" class="form-control" accept=".sql,.zip,.tar.gz" required>
+                        <small class="text-muted">Pilih file backup yang akan di-restore</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Password Enkripsi</label>
+                        <input type="password" class="form-control" placeholder="Masukkan password jika backup dienkripsi">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="confirmRestore" required>
+                            <label class="form-check-label" for="confirmRestore">
+                                Saya memahami bahwa proses restore akan mengganti data saat ini
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger btn-submit">Restore Backup</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+code {
+    font-size: 0.875em;
+    background-color: #f8f9fa;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.progress {
+    height: 8px;
+}
+
+.alert {
+    border-left: 4px solid;
+}
+
+.alert-warning {
+    border-left-color: #f39c12;
+}
+
+#encryptPassword:disabled {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Enable/disable encryption password field
+document.getElementById('encryptBackup').addEventListener('change', function() {
+    const passwordField = document.getElementById('encryptPassword');
+    passwordField.disabled = !this.checked;
+    if (!this.checked) {
+        passwordField.value = '';
+    }
+});
+
+// Save backup configuration
+function saveBackupConfig() {
+    showNotification('Menyimpan konfigurasi backup...', 'info');
+    
+    // Simulate save
+    setTimeout(() => {
+        showNotification('Konfigurasi backup berhasil disimpan', 'success');
+    }, 2000);
+}
+
+// Test backup
+function testBackup() {
+    showNotification('Menjalankan test backup...', 'info');
+    
+    // Simulate test
+    setTimeout(() => {
+        showNotification('Test backup berhasil', 'success');
+    }, 3000);
+}
+
+// Create backup
+document.querySelector('#createBackupModal .btn-submit').addEventListener('click', function() {
+    const form = document.getElementById('createBackupForm');
+    if (form.checkValidity()) {
+        showNotification('Membuat backup...', 'info');
+        bootstrap.Modal.getInstance(document.getElementById('createBackupModal')).hide();
+        form.reset();
+        
+        // Simulate backup creation
+        setTimeout(() => {
+            showNotification('Backup berhasil dibuat', 'success');
+        }, 5000);
+    } else {
+        form.reportValidity();
+    }
+});
+
+// Restore backup
+document.querySelector('#restoreBackupModal .btn-submit').addEventListener('click', function() {
+    const form = document.getElementById('restoreBackupForm');
+    if (form.checkValidity()) {
+        if (confirm('Apakah Anda yakin ingin melakukan restore? Tindakan ini akan mengganti semua data saat ini.')) {
+            showNotification('Memulai proses restore...', 'info');
+            bootstrap.Modal.getInstance(document.getElementById('restoreBackupModal')).hide();
+            form.reset();
+            
+            // Simulate restore
+            setTimeout(() => {
+                showNotification('Restore berhasil dilakukan', 'success');
+            }, 10000);
+        }
+    } else {
+        form.reportValidity();
+    }
+});
+
+// Backup actions
+function downloadBackup(id) {
+    showNotification('Mengunduh backup...', 'info');
+    
+    // Simulate download
+    setTimeout(() => {
+        showNotification('Backup berhasil diunduh', 'success');
+    }, 2000);
+}
+
+function restoreBackup(id) {
+    new bootstrap.Modal(document.getElementById('restoreBackupModal')).show();
+}
+
+function deleteBackup(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus backup ini?')) {
+        showNotification('Backup berhasil dihapus', 'success');
+        // Remove row from table
+        event.target.closest('tr').remove();
+    }
+}
+
+function cancelBackup(id) {
+    if (confirm('Apakah Anda yakin ingin membatalkan backup yang sedang berjalan?')) {
+        showNotification('Backup dibatalkan', 'warning');
+        // Update row status
+        const row = event.target.closest('tr');
+        const statusCell = row.querySelector('td:nth-child(4)');
+        statusCell.innerHTML = '<span class="badge bg-danger">Dibatalkan</span>';
+    }
+}
+
+// Other functions
+function refreshBackupList() {
+    showNotification('Memuat ulang daftar backup...', 'info');
+    
+    // Simulate refresh
+    setTimeout(() => {
+        showNotification('Daftar backup berhasil dimuat ulang', 'success');
+    }, 1000);
+}
+
+function cleanOldBackups() {
+    if (confirm('Apakah Anda yakin ingin menghapus backup yang lebih dari 30 hari?')) {
+        showNotification('Menghapus backup lama...', 'info');
+        
+        // Simulate cleanup
+        setTimeout(() => {
+            showNotification('Backup lama berhasil dihapus', 'success');
+        }, 2000);
+    }
+}
+</script>
+{% endblock %}

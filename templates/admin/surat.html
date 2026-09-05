@@ -1,0 +1,608 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manajemen Surat - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Manajemen Surat</h2>
+        <p class="text-muted">Kelola surat-menyurat desa</p>
+    </div>
+    <div>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#tambahSuratModal">
+            <i class="bi bi-envelope-plus"></i> Buat Surat Baru
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">45</div>
+                    <div class="stats-label">Total Surat</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-envelope"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">32</div>
+                    <div class="stats-label">Selesai</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">8</div>
+                    <div class="stats-label">Pending</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-clock"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stats-number">5</div>
+                    <div class="stats-label">Ditolak</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-x-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="search-box">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" class="form-control search-input" placeholder="Cari nomor surat, pengirim, atau jenis surat...">
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <select class="form-select">
+                    <option value="">Semua Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="proses">Proses</option>
+                    <option value="selesai">Selesai</option>
+                    <option value="ditolak">Ditolak</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-3">
+                <select class="form-select">
+                    <option value="">Semua Jenis</option>
+                    <option value="surat_keterangan">Surat Keterangan</option>
+                    <option value="surat_izin">Surat Izin</option>
+                    <option value="surat_rekomendasi">Surat Rekomendasi</option>
+                    <option value="surat_pengantar">Surat Pengantar</option>
+                </select>
+            </div>
+            <div class="col-md-2 mb-3">
+                <button class="btn btn-primary w-100">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Surat Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-envelope"></i>
+            Daftar Surat
+        </h5>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-download"></i> Export
+            </button>
+            <button class="btn btn-outline-success btn-sm">
+                <i class="bi bi-printer"></i> Print
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th data-sort>No</th>
+                        <th data-sort>Nomor Surat</th>
+                        <th data-sort>Jenis Surat</th>
+                        <th data-sort>Pengirim</th>
+                        <th data-sort>Tanggal</th>
+                        <th data-sort>Status</th>
+                        <th data-sort>Prioritas</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>
+                            <strong>SK/001/IX/2024</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">Surat Keterangan</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    A
+                                </div>
+                                Ahmad Susanto
+                            </div>
+                        </td>
+                        <td>13 Sep 2024</td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                        <td><span class="badge bg-danger">Tinggi</span></td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailSuratModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#prosesSuratModal">
+                                    <i class="bi bi-check"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editSuratModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>
+                            <strong>SI/002/IX/2024</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">Surat Izin</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    S
+                                </div>
+                                Siti Nurhaliza
+                            </div>
+                        </td>
+                        <td>12 Sep 2024</td>
+                        <td><span class="badge bg-primary">Proses</span></td>
+                        <td><span class="badge bg-warning">Sedang</span></td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailSuratModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#prosesSuratModal">
+                                    <i class="bi bi-check"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editSuratModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>
+                            <strong>SR/003/IX/2024</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning">Surat Rekomendasi</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    B
+                                </div>
+                                Budi Santoso
+                            </div>
+                        </td>
+                        <td>11 Sep 2024</td>
+                        <td><span class="badge bg-success">Selesai</span></td>
+                        <td><span class="badge bg-success">Rendah</span></td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailSuratModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-info" title="Download">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editSuratModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>
+                            <strong>SP/004/IX/2024</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">Surat Pengantar</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    M
+                                </div>
+                                Maria Magdalena
+                            </div>
+                        </td>
+                        <td>10 Sep 2024</td>
+                        <td><span class="badge bg-danger">Ditolak</span></td>
+                        <td><span class="badge bg-warning">Sedang</span></td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailSuratModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editSuratModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>
+                            <strong>SK/005/IX/2024</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">Surat Keterangan</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-danger text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    J
+                                </div>
+                                Joko Widodo
+                            </div>
+                        </td>
+                        <td>09 Sep 2024</td>
+                        <td><span class="badge bg-success">Selesai</span></td>
+                        <td><span class="badge bg-success">Rendah</span></td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailSuratModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-info" title="Download">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editSuratModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <nav aria-label="Pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Tambah Surat Modal -->
+<div class="modal fade" id="tambahSuratModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Buat Surat Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis Surat</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Jenis Surat</option>
+                                <option value="surat_keterangan">Surat Keterangan</option>
+                                <option value="surat_izin">Surat Izin</option>
+                                <option value="surat_rekomendasi">Surat Rekomendasi</option>
+                                <option value="surat_pengantar">Surat Pengantar</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Prioritas</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Prioritas</option>
+                                <option value="rendah">Rendah</option>
+                                <option value="sedang">Sedang</option>
+                                <option value="tinggi">Tinggi</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Pengirim</label>
+                        <select class="form-select" required>
+                            <option value="">Pilih Pengirim</option>
+                            <option value="1">Ahmad Susanto</option>
+                            <option value="2">Siti Nurhaliza</option>
+                            <option value="3">Budi Santoso</option>
+                            <option value="4">Maria Magdalena</option>
+                            <option value="5">Joko Widodo</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Perihal</label>
+                        <input type="text" class="form-control" placeholder="Masukkan perihal surat" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Isi Surat</label>
+                        <textarea class="form-control" rows="5" placeholder="Masukkan isi surat" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal Surat</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal Selesai</label>
+                            <input type="date" class="form-control">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-success btn-submit">Buat Surat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Surat Modal -->
+<div class="modal fade" id="detailSuratModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detail Surat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Nomor Surat:</strong></td>
+                                <td>SK/001/IX/2024</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Jenis Surat:</strong></td>
+                                <td><span class="badge bg-info">Surat Keterangan</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pengirim:</strong></td>
+                                <td>Ahmad Susanto</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status:</strong></td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Prioritas:</strong></td>
+                                <td><span class="badge bg-danger">Tinggi</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Tanggal Surat:</strong></td>
+                                <td>13 September 2024</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tanggal Selesai:</strong></td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dibuat Oleh:</strong></td>
+                                <td>Admin Desa</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Diperbarui:</strong></td>
+                                <td>13 September 2024</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Perihal:</strong></label>
+                    <p>Surat Keterangan Domisili</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Isi Surat:</strong></label>
+                    <div class="border p-3 rounded">
+                        <p>Yang bertanda tangan di bawah ini, Kepala Desa [Nama Desa], menerangkan bahwa:</p>
+                        <p><strong>Nama:</strong> Ahmad Susanto<br>
+                        <strong>NIK:</strong> 3201234567890123<br>
+                        <strong>Alamat:</strong> RT 01/RW 01, Jl. Merdeka No. 123</p>
+                        <p>Benar-benar berdomisili di wilayah Desa [Nama Desa] dan surat keterangan ini dibuat untuk keperluan [tujuan].</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-success">Proses</button>
+                <button type="button" class="btn btn-warning">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Proses Surat Modal -->
+<div class="modal fade" id="prosesSuratModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Proses Surat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" required>
+                            <option value="proses">Proses</option>
+                            <option value="selesai">Selesai</option>
+                            <option value="ditolak">Ditolak</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Catatan</label>
+                        <textarea class="form-control" rows="3" placeholder="Masukkan catatan proses surat"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tanggal Selesai</label>
+                        <input type="date" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-success btn-submit">Update Status</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Surat Modal -->
+<div class="modal fade" id="editSuratModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Surat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis Surat</label>
+                            <select class="form-select" required>
+                                <option value="surat_keterangan" selected>Surat Keterangan</option>
+                                <option value="surat_izin">Surat Izin</option>
+                                <option value="surat_rekomendasi">Surat Rekomendasi</option>
+                                <option value="surat_pengantar">Surat Pengantar</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Prioritas</label>
+                            <select class="form-select" required>
+                                <option value="rendah">Rendah</option>
+                                <option value="sedang">Sedang</option>
+                                <option value="tinggi" selected>Tinggi</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Pengirim</label>
+                        <select class="form-select" required>
+                            <option value="1" selected>Ahmad Susanto</option>
+                            <option value="2">Siti Nurhaliza</option>
+                            <option value="3">Budi Santoso</option>
+                            <option value="4">Maria Magdalena</option>
+                            <option value="5">Joko Widodo</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Perihal</label>
+                        <input type="text" class="form-control" value="Surat Keterangan Domisili" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Isi Surat</label>
+                        <textarea class="form-control" rows="5" required>Yang bertanda tangan di bawah ini, Kepala Desa [Nama Desa], menerangkan bahwa:
+
+Nama: Ahmad Susanto
+NIK: 3201234567890123
+Alamat: RT 01/RW 01, Jl. Merdeka No. 123
+
+Benar-benar berdomisili di wilayah Desa [Nama Desa] dan surat keterangan ini dibuat untuk keperluan [tujuan].</textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal Surat</label>
+                            <input type="date" class="form-control" value="2024-09-13" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" required>
+                                <option value="pending" selected>Pending</option>
+                                <option value="proses">Proses</option>
+                                <option value="selesai">Selesai</option>
+                                <option value="ditolak">Ditolak</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-warning btn-submit">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

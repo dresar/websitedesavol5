@@ -1,0 +1,728 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Advanced - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Dashboard Advanced</h2>
+        <p class="text-muted">Dashboard canggih dengan analisis mendalam</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" onclick="refreshDashboard()">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+    </div>
+</div>
+
+<!-- Key Performance Indicators -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card kpi-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="kpi-label">Total Penduduk</div>
+                        <div class="kpi-value">1,450</div>
+                        <div class="kpi-change text-success">
+                            <i class="bi bi-arrow-up"></i> +5.2%
+                        </div>
+                    </div>
+                    <div class="kpi-icon">
+                        <i class="bi bi-people text-primary"></i>
+                    </div>
+                </div>
+                <div class="kpi-progress">
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-primary" style="width: 75%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card kpi-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="kpi-label">Anggaran Tersisa</div>
+                        <div class="kpi-value">Rp 250M</div>
+                        <div class="kpi-change text-warning">
+                            <i class="bi bi-exclamation-triangle"></i> 25%
+                        </div>
+                    </div>
+                    <div class="kpi-icon">
+                        <i class="bi bi-cash-stack text-warning"></i>
+                    </div>
+                </div>
+                <div class="kpi-progress">
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-warning" style="width: 25%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card kpi-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="kpi-label">Kegiatan Aktif</div>
+                        <div class="kpi-value">12</div>
+                        <div class="kpi-change text-success">
+                            <i class="bi bi-arrow-up"></i> +3
+                        </div>
+                    </div>
+                    <div class="kpi-icon">
+                        <i class="bi bi-calendar-event text-success"></i>
+                    </div>
+                </div>
+                <div class="kpi-progress">
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-success" style="width: 60%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card kpi-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="kpi-label">Surat Pending</div>
+                        <div class="kpi-value">45</div>
+                        <div class="kpi-change text-danger">
+                            <i class="bi bi-arrow-down"></i> -8
+                        </div>
+                    </div>
+                    <div class="kpi-icon">
+                        <i class="bi bi-envelope text-danger"></i>
+                    </div>
+                </div>
+                <div class="kpi-progress">
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-danger" style="width: 45%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Dashboard Content -->
+<div class="row mb-4">
+    <!-- Population Growth Chart -->
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-graph-up"></i> Pertumbuhan Penduduk
+                </h5>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary active" onclick="changeChartPeriod('monthly')">Bulanan</button>
+                    <button class="btn btn-outline-primary" onclick="changeChartPeriod('yearly')">Tahunan</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="populationChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="col-xl-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-speedometer2"></i> Statistik Cepat
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="quick-stats">
+                    <div class="stat-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Penduduk Baru Hari Ini</span>
+                            <span class="badge bg-success">5</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Surat Diproses</span>
+                            <span class="badge bg-primary">12</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Transaksi Keuangan</span>
+                            <span class="badge bg-warning">8</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Kegiatan Selesai</span>
+                            <span class="badge bg-info">3</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Infrastruktur Rusak</span>
+                            <span class="badge bg-danger">2</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Financial Overview -->
+<div class="row mb-4">
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-pie-chart"></i> Distribusi Anggaran
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="budgetChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-bar-chart"></i> Realisasi vs Anggaran
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="realizationChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activities and Alerts -->
+<div class="row mb-4">
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history"></i> Aktivitas Terbaru
+                </h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="viewAllActivities()">
+                    Lihat Semua
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <div class="activity-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-success"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <h6 class="mb-1">Penduduk Baru Terdaftar</h6>
+                                <small class="text-muted">2 menit yang lalu</small>
+                            </div>
+                            <p class="mb-0">Ahmad Susanto telah terdaftar sebagai penduduk baru di RT 01</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <h6 class="mb-1">Surat Masuk Baru</h6>
+                                <small class="text-muted">15 menit yang lalu</small>
+                            </div>
+                            <p class="mb-0">Surat dari Kecamatan Sukamaju telah diterima</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-warning"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <h6 class="mb-1">Transaksi Keuangan</h6>
+                                <small class="text-muted">1 jam yang lalu</small>
+                            </div>
+                            <p class="mb-0">Pembayaran kontraktor sebesar Rp 50.000.000</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-info"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <h6 class="mb-1">Kegiatan Baru</h6>
+                                <small class="text-muted">2 jam yang lalu</small>
+                            </div>
+                            <p class="mb-0">Festival Budaya Desa telah dijadwalkan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> Peringatan & Alert
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert-list">
+                    <div class="alert-item alert-danger">
+                        <div class="alert-icon">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                        <div class="alert-content">
+                            <h6 class="mb-1">Anggaran Hampir Habis</h6>
+                            <p class="mb-0">Sisa anggaran hanya 25% dari total</p>
+                        </div>
+                    </div>
+                    
+                    <div class="alert-item alert-warning">
+                        <div class="alert-icon">
+                            <i class="bi bi-clock"></i>
+                        </div>
+                        <div class="alert-content">
+                            <h6 class="mb-1">Backup Terlambat</h6>
+                            <p class="mb-0">Backup terakhir 3 hari yang lalu</p>
+                        </div>
+                    </div>
+                    
+                    <div class="alert-item alert-info">
+                        <div class="alert-icon">
+                            <i class="bi bi-info-circle"></i>
+                        </div>
+                        <div class="alert-content">
+                            <h6 class="mb-1">Update Tersedia</h6>
+                            <p class="mb-0">Versi baru sistem tersedia</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Performance -->
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-cpu"></i> Performa Sistem
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="performance-metrics">
+                    <div class="metric-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>CPU Usage</span>
+                            <span class="fw-bold text-warning">65%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-warning" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Memory Usage</span>
+                            <span class="fw-bold text-info">78%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-info" style="width: 78%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Disk Usage</span>
+                            <span class="fw-bold text-danger">85%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-danger" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Network</span>
+                            <span class="fw-bold text-success">45%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: 45%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-geo-alt"></i> Peta Desa
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="map-placeholder">
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <div class="text-center">
+                            <i class="bi bi-map text-muted" style="font-size: 48px;"></i>
+                            <h5 class="text-muted mt-3">Peta Interaktif</h5>
+                            <p class="text-muted">Peta desa akan ditampilkan di sini</p>
+                            <button class="btn btn-primary btn-sm" onclick="loadMap()">
+                                <i class="bi bi-geo-alt"></i> Muat Peta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.kpi-card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+}
+
+.kpi-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.kpi-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.kpi-change {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.kpi-icon {
+    font-size: 2.5rem;
+}
+
+.kpi-progress {
+    margin-top: 0.5rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.quick-stats .stat-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.quick-stats .stat-item:last-child {
+    border-bottom: none;
+}
+
+.activity-timeline {
+    padding: 1rem;
+}
+
+.timeline-item {
+    display: flex;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-marker {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 1rem;
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+.timeline-header h6 {
+    margin-bottom: 0.25rem;
+}
+
+.alert-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.alert-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.alert-item:last-child {
+    border-bottom: none;
+}
+
+.alert-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+    color: white;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.alert-item.alert-danger .alert-icon {
+    background-color: #dc3545;
+}
+
+.alert-item.alert-warning .alert-icon {
+    background-color: #ffc107;
+}
+
+.alert-item.alert-info .alert-icon {
+    background-color: #0dcaf0;
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-content h6 {
+    margin-bottom: 0.25rem;
+}
+
+.performance-metrics .metric-item {
+    margin-bottom: 1rem;
+}
+
+.performance-metrics .metric-item:last-child {
+    margin-bottom: 0;
+}
+
+.map-placeholder {
+    height: 300px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 2px dashed #dee2e6;
+}
+
+.progress {
+    height: 8px;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize charts
+document.addEventListener('DOMContentLoaded', function() {
+    // Population Chart
+    const popCtx = document.getElementById('populationChart').getContext('2d');
+    new Chart(popCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep'],
+            datasets: [{
+                label: 'Penduduk',
+                data: [1200, 1250, 1300, 1280, 1350, 1400, 1420, 1450, 1450],
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            }
+        }
+    });
+
+    // Budget Chart
+    const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+    new Chart(budgetCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Infrastruktur', 'Pembangunan', 'Operasional', 'Kegiatan', 'Lain-lain'],
+            datasets: [{
+                data: [35, 25, 20, 15, 5],
+                backgroundColor: [
+                    '#e74c3c',
+                    '#f39c12',
+                    '#3498db',
+                    '#2ecc71',
+                    '#9b59b6'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+
+    // Realization Chart
+    const realCtx = document.getElementById('realizationChart').getContext('2d');
+    new Chart(realCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Infrastruktur', 'Pembangunan', 'Operasional', 'Kegiatan', 'Lain-lain'],
+            datasets: [{
+                label: 'Anggaran',
+                data: [35, 25, 20, 15, 5],
+                backgroundColor: 'rgba(52, 152, 219, 0.8)'
+            }, {
+                label: 'Realisasi',
+                data: [30, 22, 18, 12, 4],
+                backgroundColor: 'rgba(231, 76, 60, 0.8)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            }
+        }
+    });
+});
+
+// Change chart period
+function changeChartPeriod(period) {
+    // Update button states
+    document.querySelectorAll('.btn-group .btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    showNotification(`Mengubah periode chart ke ${period}`, 'info');
+    
+    // In a real application, this would update the chart data
+    setTimeout(() => {
+        showNotification('Chart berhasil diperbarui', 'success');
+    }, 1000);
+}
+
+// View all activities
+function viewAllActivities() {
+    showNotification('Membuka halaman aktivitas lengkap...', 'info');
+    
+    // In a real application, this would navigate to the activities page
+    setTimeout(() => {
+        showNotification('Halaman aktivitas berhasil dibuka', 'success');
+    }, 1000);
+}
+
+// Load map
+function loadMap() {
+    showNotification('Memuat peta interaktif...', 'info');
+    
+    // Simulate map loading
+    setTimeout(() => {
+        showNotification('Peta berhasil dimuat', 'success');
+        // In a real application, this would load an actual map
+    }, 2000);
+}
+
+// Refresh dashboard
+function refreshDashboard() {
+    showNotification('Memuat ulang dashboard...', 'info');
+    
+    // Simulate refresh
+    setTimeout(() => {
+        showNotification('Dashboard berhasil dimuat ulang', 'success');
+    }, 2000);
+}
+
+// Auto-refresh every 30 seconds
+setInterval(() => {
+    // In a real application, this would fetch new data
+    console.log('Auto-refreshing dashboard data...');
+}, 30000);
+</script>
+{% endblock %}

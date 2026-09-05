@@ -1,0 +1,365 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pengaturan Profil - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Pengaturan Profil</h2>
+        <p class="text-muted">Kelola informasi profil dan pengaturan akun</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Profile Information -->
+    <div class="col-xl-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-person-circle"></i>
+                    Foto Profil
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <div class="avatar-lg bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3">
+                        <i class="bi bi-person" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5>Admin Desa</h5>
+                    <p class="text-muted">Administrator</p>
+                </div>
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ubahFotoModal">
+                    <i class="bi bi-camera"></i> Ubah Foto
+                </button>
+            </div>
+        </div>
+        
+        <!-- Account Status -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-shield-check"></i>
+                    Status Akun
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Status Akun</span>
+                    <span class="badge bg-success">Aktif</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Terakhir Login</span>
+                    <small class="text-muted">13 Sep 2024, 10:30</small>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>IP Address</span>
+                    <small class="text-muted">192.168.1.100</small>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Browser</span>
+                    <small class="text-muted">Chrome 117.0</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Settings -->
+    <div class="col-xl-8 mb-4">
+        <!-- Personal Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-person-lines-fill"></i>
+                    Informasi Personal
+                </h5>
+            </div>
+            <div class="card-body">
+                <form class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nama Lengkap</label>
+                            <input type="text" class="form-control" value="Admin Desa" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="admin@desa.id" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">No. HP</label>
+                            <input type="tel" class="form-control" value="081234567890" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jabatan</label>
+                            <input type="text" class="form-control" value="Administrator" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Alamat</label>
+                        <textarea class="form-control" rows="3" required>Kantor Desa, Jl. Raya Desa No. 1, Kecamatan, Kabupaten</textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal Lahir</label>
+                            <input type="date" class="form-control" value="1985-01-15">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis Kelamin</label>
+                            <select class="form-select" required>
+                                <option value="laki" selected>Laki-laki</option>
+                                <option value="perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-warning btn-submit">
+                            <i class="bi bi-check"></i> Update Informasi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Security Settings -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-lock"></i>
+                    Pengaturan Keamanan
+                </h5>
+            </div>
+            <div class="card-body">
+                <form class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label class="form-label">Password Lama</label>
+                        <input type="password" class="form-control" placeholder="Masukkan password lama">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password Baru</label>
+                        <input type="password" class="form-control" placeholder="Masukkan password baru">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Konfirmasi Password Baru</label>
+                        <input type="password" class="form-control" placeholder="Konfirmasi password baru">
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-danger btn-submit">
+                            <i class="bi bi-key"></i> Ubah Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Notification Settings -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-bell"></i>
+                    Pengaturan Notifikasi
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="notifEmail" checked>
+                    <label class="form-check-label" for="notifEmail">
+                        Email Notifikasi
+                    </label>
+                </div>
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="notifSMS" checked>
+                    <label class="form-check-label" for="notifSMS">
+                        SMS Notifikasi
+                    </label>
+                </div>
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="notifPenduduk" checked>
+                    <label class="form-check-label" for="notifPenduduk">
+                        Notifikasi Penduduk Baru
+                    </label>
+                </div>
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="notifSurat" checked>
+                    <label class="form-check-label" for="notifSurat">
+                        Notifikasi Surat Masuk
+                    </label>
+                </div>
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="notifKeuangan">
+                    <label class="form-check-label" for="notifKeuangan">
+                        Notifikasi Transaksi Keuangan
+                    </label>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary btn-submit">
+                        <i class="bi bi-save"></i> Simpan Pengaturan
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- System Settings -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-gear"></i>
+                    Pengaturan Sistem
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Bahasa</label>
+                        <select class="form-select">
+                            <option value="id" selected>Bahasa Indonesia</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Zona Waktu</label>
+                        <select class="form-select">
+                            <option value="Asia/Jakarta" selected>WIB (Jakarta)</option>
+                            <option value="Asia/Makassar">WITA (Makassar)</option>
+                            <option value="Asia/Jayapura">WIT (Jayapura)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Tema</label>
+                        <select class="form-select">
+                            <option value="light" selected>Terang</option>
+                            <option value="dark">Gelap</option>
+                            <option value="auto">Otomatis</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Format Tanggal</label>
+                        <select class="form-select">
+                            <option value="dd/mm/yyyy" selected>DD/MM/YYYY</option>
+                            <option value="mm/dd/yyyy">MM/DD/YYYY</option>
+                            <option value="yyyy-mm-dd">YYYY-MM-DD</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary btn-submit">
+                        <i class="bi bi-save"></i> Simpan Pengaturan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ubah Foto Modal -->
+<div class="modal fade" id="ubahFotoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ubah Foto Profil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <div class="avatar-lg bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3">
+                        <i class="bi bi-person" style="font-size: 3rem;"></i>
+                    </div>
+                    <p class="text-muted">Foto saat ini</p>
+                </div>
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Pilih Foto Baru</label>
+                        <input type="file" class="form-control" accept="image/*">
+                        <div class="form-text">Format yang didukung: JPG, PNG, GIF. Maksimal 2MB.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary btn-submit">Ubah Foto</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Activity Log -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-clock-history"></i>
+            Log Aktivitas
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Waktu</th>
+                        <th>Aktivitas</th>
+                        <th>IP Address</th>
+                        <th>Browser</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>13 Sep 2024, 10:30</td>
+                        <td>Login ke sistem</td>
+                        <td>192.168.1.100</td>
+                        <td>Chrome 117.0</td>
+                        <td><span class="badge bg-success">Berhasil</span></td>
+                    </tr>
+                    <tr>
+                        <td>13 Sep 2024, 09:15</td>
+                        <td>Update data penduduk</td>
+                        <td>192.168.1.100</td>
+                        <td>Chrome 117.0</td>
+                        <td><span class="badge bg-success">Berhasil</span></td>
+                    </tr>
+                    <tr>
+                        <td>12 Sep 2024, 16:45</td>
+                        <td>Buat surat baru</td>
+                        <td>192.168.1.100</td>
+                        <td>Chrome 117.0</td>
+                        <td><span class="badge bg-success">Berhasil</span></td>
+                    </tr>
+                    <tr>
+                        <td>12 Sep 2024, 14:20</td>
+                        <td>Update profil</td>
+                        <td>192.168.1.100</td>
+                        <td>Chrome 117.0</td>
+                        <td><span class="badge bg-success">Berhasil</span></td>
+                    </tr>
+                    <tr>
+                        <td>11 Sep 2024, 11:30</td>
+                        <td>Gagal login</td>
+                        <td>192.168.1.50</td>
+                        <td>Firefox 118.0</td>
+                        <td><span class="badge bg-danger">Gagal</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <nav aria-label="Pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}

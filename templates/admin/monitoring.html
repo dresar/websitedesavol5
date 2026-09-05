@@ -1,0 +1,791 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Monitoring Sistem - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Monitoring Sistem</h2>
+        <p class="text-muted">Pantau performa dan kesehatan sistem</p>
+    </div>
+    <div>
+        <button class="btn btn-primary" onclick="refreshMonitoring()">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+    </div>
+</div>
+
+<!-- System Status Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card status-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="status-label">Server Status</div>
+                        <div class="status-value text-success">Online</div>
+                    </div>
+                    <div class="status-icon">
+                        <i class="bi bi-server text-success"></i>
+                    </div>
+                </div>
+                <div class="status-detail">
+                    <small class="text-muted">Uptime: 15 hari 3 jam</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card status-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="status-label">Database</div>
+                        <div class="status-value text-success">Connected</div>
+                    </div>
+                    <div class="status-icon">
+                        <i class="bi bi-database text-success"></i>
+                    </div>
+                </div>
+                <div class="status-detail">
+                    <small class="text-muted">Response: 12ms</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card status-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="status-label">CPU Usage</div>
+                        <div class="status-value text-warning">65%</div>
+                    </div>
+                    <div class="status-icon">
+                        <i class="bi bi-cpu text-warning"></i>
+                    </div>
+                </div>
+                <div class="status-detail">
+                    <small class="text-muted">Load: 2.1</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card status-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="status-label">Memory</div>
+                        <div class="status-value text-info">78%</div>
+                    </div>
+                    <div class="status-icon">
+                        <i class="bi bi-memory text-info"></i>
+                    </div>
+                </div>
+                <div class="status-detail">
+                    <small class="text-muted">2.1GB / 2.7GB</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Charts -->
+<div class="row mb-4">
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-graph-up"></i> Performa Sistem
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-activity"></i> Aktivitas Real-time
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon bg-success">
+                            <i class="bi bi-person-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Penduduk Baru</div>
+                            <div class="activity-time">2 menit lalu</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon bg-primary">
+                            <i class="bi bi-envelope"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Surat Masuk</div>
+                            <div class="activity-time">5 menit lalu</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon bg-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">High CPU Usage</div>
+                            <div class="activity-time">10 menit lalu</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon bg-info">
+                            <i class="bi bi-download"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Backup Selesai</div>
+                            <div class="activity-time">1 jam lalu</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Metrics -->
+<div class="row mb-4">
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-hdd"></i> Penggunaan Disk
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="disk-usage">
+                    <div class="disk-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Root (/)</span>
+                            <span class="fw-bold">75%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-warning" style="width: 75%"></div>
+                        </div>
+                        <small class="text-muted">15.2GB / 20.3GB</small>
+                    </div>
+                    
+                    <div class="disk-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Backup (/backup)</span>
+                            <span class="fw-bold">45%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-info" style="width: 45%"></div>
+                        </div>
+                        <small class="text-muted">4.5GB / 10.0GB</small>
+                    </div>
+                    
+                    <div class="disk-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Logs (/var/log)</span>
+                            <span class="fw-bold">30%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: 30%"></div>
+                        </div>
+                        <small class="text-muted">1.2GB / 4.0GB</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-globe"></i> Koneksi Jaringan
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="network-stats">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <div class="network-item">
+                                <div class="network-label">Bandwidth In</div>
+                                <div class="network-value">2.3 MB/s</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="network-item">
+                                <div class="network-label">Bandwidth Out</div>
+                                <div class="network-value">1.8 MB/s</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <div class="network-item">
+                                <div class="network-label">Koneksi Aktif</div>
+                                <div class="network-value">24</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="network-item">
+                                <div class="network-label">Latency</div>
+                                <div class="network-value">45ms</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="network-item">
+                                <div class="network-label">IP Address</div>
+                                <div class="network-value">
+                                    <code>192.168.1.100</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Logs -->
+<div class="row">
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> Error Logs
+                </h5>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary" onclick="refreshErrorLogs()">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="clearErrorLogs()">
+                        <i class="bi bi-trash"></i> Clear
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Waktu</th>
+                                <th>Level</th>
+                                <th>Pesan</th>
+                                <th>File</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold">13 Sep 2024</span>
+                                        <small class="text-muted">14:30:25</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning">WARNING</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div class="fw-bold">High memory usage detected</div>
+                                        <small class="text-muted">Memory usage exceeded 80%</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <code>monitor.py:45</code>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewErrorDetail(1)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold">13 Sep 2024</span>
+                                        <small class="text-muted">14:25:10</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger">ERROR</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div class="fw-bold">Database connection failed</div>
+                                        <small class="text-muted">Connection timeout after 30 seconds</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <code>database.py:123</code>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewErrorDetail(2)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold">13 Sep 2024</span>
+                                        <small class="text-muted">14:20:45</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">INFO</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div class="fw-bold">Backup completed successfully</div>
+                                        <small class="text-muted">Backup size: 2.3GB</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <code>backup.py:67</code>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewErrorDetail(3)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-shield-check"></i> Keamanan
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="security-stats">
+                    <div class="security-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Firewall</span>
+                            <span class="badge bg-success">Aktif</span>
+                        </div>
+                    </div>
+                    
+                    <div class="security-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>SSL Certificate</span>
+                            <span class="badge bg-success">Valid</span>
+                        </div>
+                    </div>
+                    
+                    <div class="security-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Antivirus</span>
+                            <span class="badge bg-warning">Update Required</span>
+                        </div>
+                    </div>
+                    
+                    <div class="security-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Login Attempts</span>
+                            <span class="badge bg-info">12 hari ini</span>
+                        </div>
+                    </div>
+                    
+                    <div class="security-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Failed Logins</span>
+                            <span class="badge bg-danger">3 hari ini</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Detail Modal -->
+<div class="modal fade" id="errorDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detail Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Informasi Umum</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>Waktu:</strong></td>
+                                <td id="errorTime">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Level:</strong></td>
+                                <td id="errorLevel">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>File:</strong></td>
+                                <td id="errorFile">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Line:</strong></td>
+                                <td id="errorLine">-</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Informasi Sistem</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>User:</strong></td>
+                                <td id="errorUser">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>IP:</strong></td>
+                                <td id="errorIP">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Session:</strong></td>
+                                <td id="errorSession">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Request:</strong></td>
+                                <td id="errorRequest">-</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Stack Trace</h6>
+                    <div class="bg-light p-3 rounded">
+                        <pre id="errorStackTrace" class="mb-0"><code>-</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" onclick="exportErrorDetail()">Export</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.status-card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.status-card:hover {
+    transform: translateY(-2px);
+}
+
+.status-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.status-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.status-detail {
+    font-size: 0.75rem;
+}
+
+.status-icon {
+    font-size: 2rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.activity-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+    color: white;
+    font-size: 14px;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.activity-time {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.disk-item {
+    margin-bottom: 1rem;
+}
+
+.disk-item:last-child {
+    margin-bottom: 0;
+}
+
+.network-item {
+    text-align: center;
+}
+
+.network-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.network-value {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.security-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.security-item:last-child {
+    border-bottom: none;
+}
+
+code {
+    font-size: 0.875em;
+    background-color: #f8f9fa;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+pre {
+    font-size: 0.875em;
+    max-height: 200px;
+    overflow-y: auto;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize performance chart
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+            datasets: [{
+                label: 'CPU Usage (%)',
+                data: [25, 30, 45, 65, 55, 40, 35],
+                borderColor: '#e74c3c',
+                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Memory Usage (%)',
+                data: [40, 45, 50, 78, 70, 60, 55],
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Disk Usage (%)',
+                data: [60, 62, 65, 75, 73, 70, 68],
+                borderColor: '#f39c12',
+                backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            }
+        }
+    });
+});
+
+// Refresh monitoring
+function refreshMonitoring() {
+    showNotification('Memuat ulang data monitoring...', 'info');
+    
+    // Simulate refresh
+    setTimeout(() => {
+        showNotification('Data monitoring berhasil dimuat ulang', 'success');
+    }, 1000);
+}
+
+// View error detail
+function viewErrorDetail(id) {
+    const errorData = {
+        1: {
+            time: '13 Sep 2024 14:30:25',
+            level: 'WARNING',
+            file: 'monitor.py',
+            line: '45',
+            user: 'system',
+            ip: '192.168.1.100',
+            session: 'sess_abc123',
+            request: 'GET /monitoring',
+            stackTrace: `Traceback (most recent call last):
+  File "monitor.py", line 45, in check_memory
+    if memory_percent > 80:
+        logger.warning("High memory usage detected")
+  File "utils.py", line 23, in get_memory_usage
+    return psutil.virtual_memory().percent
+  File "psutil/__init__.py", line 1234, in virtual_memory
+    return _psplatform.virtual_memory()`
+        },
+        2: {
+            time: '13 Sep 2024 14:25:10',
+            level: 'ERROR',
+            file: 'database.py',
+            line: '123',
+            user: 'admin',
+            ip: '192.168.1.100',
+            session: 'sess_xyz789',
+            request: 'POST /api/penduduk',
+            stackTrace: `Traceback (most recent call last):
+  File "database.py", line 123, in connect
+    conn = psycopg2.connect(connection_string)
+  File "psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection timeout after 30 seconds`
+        }
+    };
+    
+    const data = errorData[id] || errorData[1];
+    
+    document.getElementById('errorTime').textContent = data.time;
+    document.getElementById('errorLevel').textContent = data.level;
+    document.getElementById('errorFile').textContent = data.file;
+    document.getElementById('errorLine').textContent = data.line;
+    document.getElementById('errorUser').textContent = data.user;
+    document.getElementById('errorIP').textContent = data.ip;
+    document.getElementById('errorSession').textContent = data.session;
+    document.getElementById('errorRequest').textContent = data.request;
+    document.getElementById('errorStackTrace').innerHTML = `<code>${data.stackTrace}</code>`;
+    
+    new bootstrap.Modal(document.getElementById('errorDetailModal')).show();
+}
+
+// Export error detail
+function exportErrorDetail() {
+    showNotification('Mengekspor detail error...', 'info');
+    
+    // Simulate export
+    setTimeout(() => {
+        showNotification('Detail error berhasil diekspor', 'success');
+    }, 1000);
+}
+
+// Other functions
+function refreshErrorLogs() {
+    showNotification('Memuat ulang error logs...', 'info');
+    
+    // Simulate refresh
+    setTimeout(() => {
+        showNotification('Error logs berhasil dimuat ulang', 'success');
+    }, 1000);
+}
+
+function clearErrorLogs() {
+    if (confirm('Apakah Anda yakin ingin menghapus semua error logs?')) {
+        showNotification('Menghapus error logs...', 'info');
+        
+        // Simulate clear
+        setTimeout(() => {
+            showNotification('Error logs berhasil dihapus', 'success');
+        }, 2000);
+    }
+}
+
+// Auto-refresh every 30 seconds
+setInterval(() => {
+    // In a real application, this would fetch new monitoring data
+    console.log('Auto-refreshing monitoring data...');
+}, 30000);
+</script>
+{% endblock %}

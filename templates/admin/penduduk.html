@@ -1,0 +1,490 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manajemen Penduduk - Panel Admin Desa{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Manajemen Penduduk</h2>
+        <p class="text-muted">Kelola data penduduk desa</p>
+    </div>
+    <div>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#tambahPendudukModal">
+            <i class="bi bi-person-plus"></i> Tambah Penduduk
+        </button>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="search-box">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" class="form-control search-input" placeholder="Cari nama, NIK, atau alamat...">
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <select class="form-select">
+                    <option value="">Semua Status</option>
+                    <option value="aktif">Aktif</option>
+                    <option value="pending">Pending</option>
+                    <option value="nonaktif">Nonaktif</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-3">
+                <select class="form-select">
+                    <option value="">Semua RT</option>
+                    <option value="rt01">RT 01</option>
+                    <option value="rt02">RT 02</option>
+                    <option value="rt03">RT 03</option>
+                    <option value="rt04">RT 04</option>
+                </select>
+            </div>
+            <div class="col-md-2 mb-3">
+                <button class="btn btn-primary w-100">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Penduduk Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-people"></i>
+            Daftar Penduduk
+        </h5>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-download"></i> Export
+            </button>
+            <button class="btn btn-outline-success btn-sm">
+                <i class="bi bi-printer"></i> Print
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th data-sort>No</th>
+                        <th data-sort>Nama</th>
+                        <th data-sort>NIK</th>
+                        <th data-sort>Alamat</th>
+                        <th data-sort>No. HP</th>
+                        <th data-sort>Status</th>
+                        <th data-sort>Tanggal Daftar</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    A
+                                </div>
+                                Ahmad Susanto
+                            </div>
+                        </td>
+                        <td>3201234567890123</td>
+                        <td>RT 01/RW 01, Jl. Merdeka No. 123</td>
+                        <td>081234567890</td>
+                        <td><span class="badge bg-success">Aktif</span></td>
+                        <td>13 Sep 2024</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailPendudukModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editPendudukModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    S
+                                </div>
+                                Siti Nurhaliza
+                            </div>
+                        </td>
+                        <td>3201234567890124</td>
+                        <td>RT 02/RW 01, Jl. Pahlawan No. 456</td>
+                        <td>081234567891</td>
+                        <td><span class="badge bg-success">Aktif</span></td>
+                        <td>12 Sep 2024</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailPendudukModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editPendudukModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    B
+                                </div>
+                                Budi Santoso
+                            </div>
+                        </td>
+                        <td>3201234567890125</td>
+                        <td>RT 03/RW 02, Jl. Kemerdekaan No. 789</td>
+                        <td>081234567892</td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                        <td>11 Sep 2024</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailPendudukModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editPendudukModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    M
+                                </div>
+                                Maria Magdalena
+                            </div>
+                        </td>
+                        <td>3201234567890126</td>
+                        <td>RT 04/RW 02, Jl. Sudirman No. 321</td>
+                        <td>081234567893</td>
+                        <td><span class="badge bg-success">Aktif</span></td>
+                        <td>10 Sep 2024</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailPendudukModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editPendudukModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-danger text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    J
+                                </div>
+                                Joko Widodo
+                            </div>
+                        </td>
+                        <td>3201234567890127</td>
+                        <td>RT 01/RW 03, Jl. Gatot Subroto No. 654</td>
+                        <td>081234567894</td>
+                        <td><span class="badge bg-danger">Nonaktif</span></td>
+                        <td>09 Sep 2024</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailPendudukModal">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editPendudukModal">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <nav aria-label="Pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Tambah Penduduk Modal -->
+<div class="modal fade" id="tambahPendudukModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Penduduk Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nama Lengkap</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">NIK</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tempat Lahir</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal Lahir</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis Kelamin</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Jenis Kelamin</option>
+                                <option value="laki">Laki-laki</option>
+                                <option value="perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Status Perkawinan</label>
+                            <select class="form-select" required>
+                                <option value="">Pilih Status</option>
+                                <option value="belum">Belum Kawin</option>
+                                <option value="kawin">Kawin</option>
+                                <option value="cerai">Cerai</option>
+                                <option value="janda">Janda/Duda</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Alamat Lengkap</label>
+                        <textarea class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">RT</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">RW</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">No. HP</label>
+                            <input type="tel" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Pekerjaan</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-success btn-submit">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Penduduk Modal -->
+<div class="modal fade" id="detailPendudukModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detail Penduduk</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div class="avatar-lg bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3">
+                            A
+                        </div>
+                        <h5>Ahmad Susanto</h5>
+                        <span class="badge bg-success">Aktif</span>
+                    </div>
+                    <div class="col-md-8">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>NIK:</strong></td>
+                                <td>3201234567890123</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tempat, Tanggal Lahir:</strong></td>
+                                <td>Jakarta, 15 Januari 1990</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Jenis Kelamin:</strong></td>
+                                <td>Laki-laki</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status Perkawinan:</strong></td>
+                                <td>Kawin</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Alamat:</strong></td>
+                                <td>RT 01/RW 01, Jl. Merdeka No. 123</td>
+                            </tr>
+                            <tr>
+                                <td><strong>No. HP:</strong></td>
+                                <td>081234567890</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pekerjaan:</strong></td>
+                                <td>Wiraswasta</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tanggal Daftar:</strong></td>
+                                <td>13 September 2024</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-warning">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Penduduk Modal -->
+<div class="modal fade" id="editPendudukModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Data Penduduk</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nama Lengkap</label>
+                            <input type="text" class="form-control" value="Ahmad Susanto" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">NIK</label>
+                            <input type="text" class="form-control" value="3201234567890123" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tempat Lahir</label>
+                            <input type="text" class="form-control" value="Jakarta" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal Lahir</label>
+                            <input type="date" class="form-control" value="1990-01-15" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis Kelamin</label>
+                            <select class="form-select" required>
+                                <option value="laki" selected>Laki-laki</option>
+                                <option value="perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Status Perkawinan</label>
+                            <select class="form-select" required>
+                                <option value="belum">Belum Kawin</option>
+                                <option value="kawin" selected>Kawin</option>
+                                <option value="cerai">Cerai</option>
+                                <option value="janda">Janda/Duda</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Alamat Lengkap</label>
+                        <textarea class="form-control" rows="3" required>RT 01/RW 01, Jl. Merdeka No. 123</textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">RT</label>
+                            <input type="text" class="form-control" value="01" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">RW</label>
+                            <input type="text" class="form-control" value="01" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">No. HP</label>
+                            <input type="tel" class="form-control" value="081234567890" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Pekerjaan</label>
+                            <input type="text" class="form-control" value="Wiraswasta" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" required>
+                            <option value="aktif" selected>Aktif</option>
+                            <option value="pending">Pending</option>
+                            <option value="nonaktif">Nonaktif</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-warning btn-submit">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
